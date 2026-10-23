@@ -1,0 +1,6 @@
+{
+  "name": "Savia — Recetas y Calendario de Dieta",
+  "description": "Organiza tus recetas de dieta, registra cuándo las preparaste para no repetirlas y visualiza tu historial en un calendario minimalista.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

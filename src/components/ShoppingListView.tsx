@@ -194,7 +194,6 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
               Supermercado & Carnicería
             </span>
             <span className="inline-flex items-center gap-1 text-[11px] font-medium bg-[#EEF4F0] text-[#2C523C] px-2 py-0.5 rounded-full">
-              <Scale className="w-3 h-3" />
               <span>Cantidades y pesos sumados</span>
             </span>
           </div>

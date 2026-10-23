@@ -15,15 +15,15 @@ export const COOKING_METHODS: { id: CookingMethod; label: string; icon: string }
 ];
 
 export const PRESET_IMAGE_OPTIONS = [
-  { label: 'Pollo y brócoli', url: '/src/assets/images/recipe_pollo_brocoli_palta_1792712404721.jpg' },
-  { label: 'Bife de chorizo', url: '/src/assets/images/recipe_bife_chorizo_1792712404795.jpg' },
-  { label: 'Hamburguesa con huevo', url: '/src/assets/images/recipe_hamburguesa_huevo_1792713324729.jpg' },
-  { label: 'Omelette espinaca', url: '/src/assets/images/recipe_omelette_espinaca_1792713324934.jpg' },
-  { label: 'Filete de merluza', url: '/src/assets/images/recipe_merluza_acelga_1792713325749.jpg' },
-  { label: 'Churrasco de cerdo', url: '/src/assets/images/recipe_churrasco_coliflor_1792713325916.jpg' },
-  { label: 'Wok de pollo y zuchini', url: '/src/assets/images/recipe_wok_pollo_zuchini_1792713326934.jpg' },
-  { label: 'Medallones de res con queso', url: '/src/assets/images/recipe_medallones_res_queso_1792712404767.jpg' },
-  { label: 'Tarta keto de espinaca', url: '/src/assets/images/recipe_tarta_keto_espinaca_1792712405870.jpg' }
+  { label: 'Pollo y brócoli', url: '/images/recipe_pollo_brocoli_palta_1792712404721.jpg' },
+  { label: 'Bife de chorizo', url: '/images/recipe_bife_chorizo_1792712404795.jpg' },
+  { label: 'Hamburguesa con huevo', url: '/images/recipe_hamburguesa_huevo_1792713324729.jpg' },
+  { label: 'Omelette espinaca', url: '/images/recipe_omelette_espinaca_1792713324934.jpg' },
+  { label: 'Filete de merluza', url: '/images/recipe_merluza_acelga_1792713325749.jpg' },
+  { label: 'Churrasco de cerdo', url: '/images/recipe_churrasco_coliflor_1792713325916.jpg' },
+  { label: 'Wok de pollo y zuchini', url: '/images/recipe_wok_pollo_zuchini_1792713326934.jpg' },
+  { label: 'Medallones de res con queso', url: '/images/recipe_medallones_res_queso_1792712404767.jpg' },
+  { label: 'Tarta keto de espinaca', url: '/images/recipe_tarta_keto_espinaca_1792712405870.jpg' }
 ];
 
 const INITIAL_15_RECIPES: Recipe[] = [
@@ -40,7 +40,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 46,
     carbsGrams: 6,
     fatsGrams: 35,
-    imageUrl: '/src/assets/images/recipe_pollo_brocoli_palta_1792712404721.jpg',
+    imageUrl: '/images/recipe_pollo_brocoli_palta_1792712404721.jpg',
     description: 'Pechuga dorada a la plancha acompañada de brócoli salteado en manteca y palta fresca en láminas aderezada con aceite de oliva extra virgen.',
     ingredients: [
       '180g de pechuga de pollo',
@@ -105,7 +105,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 44,
     carbsGrams: 2,
     fatsGrams: 40,
-    imageUrl: '/src/assets/images/recipe_bife_chorizo_1792712404795.jpg',
+    imageUrl: '/images/recipe_bife_chorizo_1792712404795.jpg',
     description: 'Jugoso bife de chorizo sellado a fuego vivo a la plancha con escamas de sal, servido con fresca rúcula y lechuga al aceite de oliva.',
     ingredients: [
       '200g de bife de chorizo',
@@ -171,7 +171,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 42,
     carbsGrams: 5,
     fatsGrams: 32,
-    imageUrl: '/src/assets/images/recipe_medallones_res_queso_1792712404767.jpg',
+    imageUrl: '/images/recipe_medallones_res_queso_1792712404767.jpg',
     description: 'Medallones compactos de carne picada sellados a la plancha con queso cremoso derretido y ensalada de tomate maduro.',
     ingredients: [
       '180g de carne picada de res',
@@ -235,7 +235,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 48,
     carbsGrams: 4,
     fatsGrams: 26,
-    imageUrl: '/src/assets/images/recipe_merluza_acelga_1792713325749.jpg',
+    imageUrl: '/images/recipe_merluza_acelga_1792713325749.jpg',
     description: 'Filetes tiernos de merluza dorados a la plancha con ajo salteado en manteca, acompañados de hojas de acelga al vapor con queso parmesano.',
     ingredients: [
       '220g de filete de merluza fresca',
@@ -303,7 +303,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 42,
     carbsGrams: 7,
     fatsGrams: 36,
-    imageUrl: '/src/assets/images/recipe_churrasco_coliflor_1792713325916.jpg',
+    imageUrl: '/images/recipe_churrasco_coliflor_1792713325916.jpg',
     description: 'Churrasco de cerdo sellado a punto dorado en sartén de hierro, complementado con puré caliente y sedoso de coliflor, manteca y crema.',
     ingredients: [
       '180g de churrasco de cerdo',
@@ -367,7 +367,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 28,
     carbsGrams: 3,
     fatsGrams: 38,
-    imageUrl: '/src/assets/images/recipe_omelette_espinaca_1792713324934.jpg',
+    imageUrl: '/images/recipe_omelette_espinaca_1792713324934.jpg',
     description: 'Omelette keto esponjoso preparado exclusivamente a base de huevos batidos, espinaca salteada al punto y queso mozzarella hilado.',
     ingredients: [
       '3 huevos',
@@ -432,7 +432,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 45,
     carbsGrams: 6,
     fatsGrams: 39,
-    imageUrl: '/src/assets/images/recipe_pollo_horno_ensalada_1792713325350.jpg',
+    imageUrl: '/images/recipe_pollo_brocoli_palta_1792712404721.jpg',
     description: 'Pata y muslo asada al horno con piel tostada y crocante, acompañada de ensalada fresca de repollo fino, tomate y dados de palta.',
     ingredients: [
       '250g de pata y muslo de pollo con piel',
@@ -499,7 +499,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 44,
     carbsGrams: 4,
     fatsGrams: 36,
-    imageUrl: '/src/assets/images/recipe_hamburguesa_huevo_1792713324729.jpg',
+    imageUrl: '/images/recipe_hamburguesa_huevo_1792713324729.jpg',
     description: 'Hamburguesas artesanales de res con queso cremoso fundido, coronadas con huevo frito de yema tierna y ensalada fresca.',
     ingredients: [
       '180g de carne picada de res',
@@ -570,7 +570,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 44,
     carbsGrams: 5,
     fatsGrams: 35,
-    imageUrl: '/src/assets/images/recipe_bife_chorizo_1792712404795.jpg',
+    imageUrl: '/images/recipe_bife_chorizo_1792712404795.jpg',
     description: 'Bife magro y tierno de cuadril cocinado a fuego vivo con rodajas gruesas de tomate dorado al ajo y perejil fresco.',
     ingredients: [
       '200g de bife de cuadril',
@@ -635,7 +635,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 26,
     carbsGrams: 5,
     fatsGrams: 38,
-    imageUrl: '/src/assets/images/recipe_tarta_keto_espinaca_1792712405870.jpg',
+    imageUrl: '/images/recipe_tarta_keto_espinaca_1792712405870.jpg',
     description: 'Tarta keto horneada 100% libre de harinas con espinaca fresca bien escurrida, huevos batidos con crema y dados de queso fundido.',
     ingredients: [
       '150g de espinaca cocida y escurrida',
@@ -704,7 +704,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 46,
     carbsGrams: 3,
     fatsGrams: 37,
-    imageUrl: '/src/assets/images/recipe_churrasco_coliflor_1792713325916.jpg',
+    imageUrl: '/images/recipe_churrasco_coliflor_1792713325916.jpg',
     description: 'Corte fino de matambre de cerdo a la plancha cubierto de salsa de tomate natural, abundante mozzarella derretida y colchón de rúcula al oliva.',
     ingredients: [
       '180g de matambre de cerdo',
@@ -768,7 +768,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 42,
     carbsGrams: 4,
     fatsGrams: 30,
-    imageUrl: '/src/assets/images/recipe_wok_pollo_zuchini_1792713326934.jpg',
+    imageUrl: '/images/recipe_wok_pollo_zuchini_1792713326934.jpg',
     description: 'Tiras tiernas de pechuga doradas a fuego vivo con bastones crujientes de zuchini salteados en perfumado aceite de coco virgen.',
     ingredients: [
       '180g de pechuga o muslo de pollo en tiras',
@@ -831,7 +831,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 44,
     carbsGrams: 2,
     fatsGrams: 42,
-    imageUrl: '/src/assets/images/recipe_bife_chorizo_1792712404795.jpg',
+    imageUrl: '/images/recipe_bife_chorizo_1792712404795.jpg',
     description: 'Corte tradicional de vacío a la plancha en su punto exacto de jugosidad con colchón de rúcula aderezada con oliva y hebras de queso parmesano.',
     ingredients: [
       '200g de vacío o tiras de asado',
@@ -895,7 +895,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 36,
     carbsGrams: 4,
     fatsGrams: 30,
-    imageUrl: '/src/assets/images/recipe_omelette_espinaca_1792713324934.jpg',
+    imageUrl: '/images/recipe_omelette_espinaca_1792713324934.jpg',
     description: 'Ensalada fresca y saciante con lomos de atún, huevos duros tibios cortados en cuartos, tomates en dados y lechuga al aceite de oliva.',
     ingredients: [
       '120g de atún en lomo (en aceite o al natural)',
@@ -962,7 +962,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 47,
     carbsGrams: 2,
     fatsGrams: 32,
-    imageUrl: '/src/assets/images/recipe_pollo_brocoli_palta_1792712404721.jpg',
+    imageUrl: '/images/recipe_pollo_brocoli_palta_1792712404721.jpg',
     description: 'Suprema de pollo rebozada en fino queso parmesano rallado y dorada en sartén hasta lograr una costra crocante y aromática.',
     ingredients: [
       '180g de pechuga de pollo',
@@ -1025,7 +1025,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 45,
     carbsGrams: 5,
     fatsGrams: 34,
-    imageUrl: '/src/assets/images/recipe_bife_chorizo_1792712404795.jpg',
+    imageUrl: '/images/recipe_bife_chorizo_1792712404795.jpg',
     description: 'Bife tierno de nalga a la plancha fundido con manteca de tomillo y romero, acompañado de ramilletes de brócoli cocidos al vapor.',
     ingredients: [
       '200g de bife de nalga',
@@ -1088,7 +1088,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 42,
     carbsGrams: 5,
     fatsGrams: 40,
-    imageUrl: '/src/assets/images/recipe_churrasco_coliflor_1792713325916.jpg',
+    imageUrl: '/images/recipe_churrasco_coliflor_1792713325916.jpg',
     description: 'Jugosas rodajas de bondiola doradas a la plancha bañadas en reducción de crema de leche y mostaza Dijon, con tomate y palta fresca.',
     ingredients: [
       '180g de bondiola de cerdo en rodajas',
@@ -1153,7 +1153,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 30,
     carbsGrams: 3,
     fatsGrams: 36,
-    imageUrl: '/src/assets/images/recipe_omelette_espinaca_1792713324934.jpg',
+    imageUrl: '/images/recipe_omelette_espinaca_1792713324934.jpg',
     description: 'Versión keto del clásico gramajo: huevos de campo revueltos cremosos con jamón cocido en tiritas, espinaca salteada y mozzarella fundida.',
     ingredients: [
       '3 huevos',
@@ -1221,7 +1221,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 44,
     carbsGrams: 6,
     fatsGrams: 36,
-    imageUrl: '/src/assets/images/recipe_medallones_res_queso_1792712404767.jpg',
+    imageUrl: '/images/recipe_medallones_res_queso_1792712404767.jpg',
     description: 'Medallones dorados a la plancha servidos bajo un huevo frito de yema cremosa, acompañados de puré suave de coliflor a la manteca.',
     ingredients: [
       '180g de carne picada de res',
@@ -1287,7 +1287,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 46,
     carbsGrams: 4,
     fatsGrams: 28,
-    imageUrl: '/src/assets/images/recipe_merluza_acelga_1792713325749.jpg',
+    imageUrl: '/images/recipe_merluza_acelga_1792713325749.jpg',
     description: 'Filete de merluza horneado en manteca al limón y ajo picado, acompañado de crujientes rodajas de zuchini salteadas a la sartén.',
     ingredients: [
       '220g de filete de merluza',
@@ -1355,7 +1355,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 45,
     carbsGrams: 4,
     fatsGrams: 37,
-    imageUrl: '/src/assets/images/recipe_pollo_brocoli_palta_1792712404721.jpg',
+    imageUrl: '/images/recipe_pollo_brocoli_palta_1792712404721.jpg',
     description: 'Ensalada fresca y crujiente de pechuga cocida desmenuzada, hojas de lechuga, dados de palta y nueces picadas aderezada con oliva virgen.',
     ingredients: [
       '180g de pechuga de pollo cocida y desmenuzada',
@@ -1418,7 +1418,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 26,
     carbsGrams: 5,
     fatsGrams: 37,
-    imageUrl: '/src/assets/images/recipe_tarta_keto_espinaca_1792712405870.jpg',
+    imageUrl: '/images/recipe_tarta_keto_espinaca_1792712405870.jpg',
     description: 'Tarta salada horneada sin harinas a base de hebras de zuchini escurridas, huevos batidos con crema y queso mozzarella fundido.',
     ingredients: [
       '180g de zuchini rallado y escurrido',
@@ -1485,7 +1485,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 45,
     carbsGrams: 4,
     fatsGrams: 40,
-    imageUrl: '/src/assets/images/recipe_bife_chorizo_1792712404795.jpg',
+    imageUrl: '/images/recipe_bife_chorizo_1792712404795.jpg',
     description: 'Corte grueso de bife de chorizo sellado a la plancha acompañado de radicheta fresca, rodajas de tomate y dados de queso Gouda.',
     ingredients: [
       '200g de bife de chorizo',
@@ -1550,7 +1550,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 42,
     carbsGrams: 5,
     fatsGrams: 33,
-    imageUrl: '/src/assets/images/recipe_wok_pollo_zuchini_1792713326934.jpg',
+    imageUrl: '/images/recipe_wok_pollo_zuchini_1792713326934.jpg',
     description: 'Tiras tiernas de lomo o cuadril salteadas a fuego vivo con juliana fina de repollo blanco en abundante manteca y ajo.',
     ingredients: [
       '180g de carne vacuna (cuadril o lomo) en tiras',
@@ -1613,7 +1613,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 44,
     carbsGrams: 4,
     fatsGrams: 39,
-    imageUrl: '/src/assets/images/recipe_pollo_horno_ensalada_1792713325350.jpg',
+    imageUrl: '/images/recipe_pollo_brocoli_palta_1792712404721.jpg',
     description: 'Muslos de pollo perfumados al jugo de limón y orégano asados con piel crocante, servidos con ensalada de hojas de lechuga y dados de palta.',
     ingredients: [
       '250g de muslos de pollo con piel',
@@ -1679,7 +1679,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 28,
     carbsGrams: 4,
     fatsGrams: 37,
-    imageUrl: '/src/assets/images/recipe_omelette_espinaca_1792713324934.jpg',
+    imageUrl: '/images/recipe_omelette_espinaca_1792713324934.jpg',
     description: 'Tortilla tradicional keto elaborada con hojas de acelga escurridas, huevos batidos y queso mozzarella troceado, dorada por ambos lados.',
     ingredients: [
       '150g de acelga cocida y bien escurrida',
@@ -1745,7 +1745,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 45,
     carbsGrams: 5,
     fatsGrams: 35,
-    imageUrl: '/src/assets/images/recipe_churrasco_coliflor_1792713325916.jpg',
+    imageUrl: '/images/recipe_churrasco_coliflor_1792713325916.jpg',
     description: 'Churrasco de cerdo sellado a la plancha acompañado de floretes de brócoli y coliflor al vapor gratinados con queso duro al horno.',
     ingredients: [
       '180g de churrasco de cerdo',
@@ -1809,7 +1809,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 42,
     carbsGrams: 4,
     fatsGrams: 37,
-    imageUrl: '/src/assets/images/recipe_hamburguesa_huevo_1792713324729.jpg',
+    imageUrl: '/images/recipe_hamburguesa_huevo_1792713324729.jpg',
     description: 'Hamburguesas caseras de res con queso derretido, acompañadas de láminas de palta madura y ensalada crujiente de lechuga y tomate.',
     ingredients: [
       '180g de carne picada de res',
@@ -1876,7 +1876,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 46,
     carbsGrams: 3,
     fatsGrams: 33,
-    imageUrl: '/src/assets/images/recipe_bife_chorizo_1792712404795.jpg',
+    imageUrl: '/images/recipe_bife_chorizo_1792712404795.jpg',
     description: 'Tiernas rodajas de peceto asado al horno previamente sellado, acompañadas de fresca ensalada de hojas de rúcula, lechuga y tomate.',
     ingredients: [
       '200g de peceto',
@@ -1939,7 +1939,7 @@ const INITIAL_15_RECIPES: Recipe[] = [
     proteinGrams: 36,
     carbsGrams: 2,
     fatsGrams: 34,
-    imageUrl: '/src/assets/images/recipe_omelette_espinaca_1792713324934.jpg',
+    imageUrl: '/images/recipe_omelette_espinaca_1792713324934.jpg',
     description: 'Omelette esponjoso relleno de atún en lomo desmenuzado y queso mozzarella derretido, acompañado de hojas frescas de rúcula.',
     ingredients: [
       '3 huevos',

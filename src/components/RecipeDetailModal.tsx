@@ -44,7 +44,6 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
   const [checkedIngredients, setCheckedIngredients] = useState<Record<number, boolean>>({});
   const [portionMultiplier, setPortionMultiplier] = useState<1 | 2>(2); // Default to 2 porciones as requested
   const [customDate, setCustomDate] = useState<string>(getTodayDateString());
-  const [prepNotes, setPrepNotes] = useState<string>('');
   const [showAddDateBox, setShowAddDateBox] = useState(false);
   const [imgError, setImgError] = useState(false);
 
@@ -65,8 +64,7 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
   const handleLogCustomDate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!customDate) return;
-    onLogMeal(recipe, customDate, prepNotes.trim() || undefined);
-    setPrepNotes('');
+    onLogMeal(recipe, customDate);
     setShowAddDateBox(false);
   };
 
@@ -203,24 +201,12 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
                   required
                 />
               </div>
-              <div className="flex-[2] w-full">
-                <label className="block text-xs font-medium text-[#555] mb-1">
-                  Nota opcional (ej. "Cena en pareja", "A punto dorada")
-                </label>
-                <input
-                  type="text"
-                  placeholder="Añadir nota breve..."
-                  value={prepNotes}
-                  onChange={e => setPrepNotes(e.target.value)}
-                  className="w-full px-3 py-2 text-xs border border-black/15 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#2C523C]"
-                />
-              </div>
               <div className="flex gap-2 shrink-0">
                 <button
                   type="submit"
                   className="px-4 py-2 text-xs font-medium text-white bg-[#2C523C] hover:bg-[#234230] rounded-lg transition-colors cursor-pointer"
                 >
-                  Registrar
+                  Registrar fecha
                 </button>
                 <button
                   type="button"
@@ -610,42 +596,106 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
 
           {/* Historical Preparation Dates Log */}
           <div className="p-5 sm:p-6 bg-[#FAF9F6]">
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3.5">
               <h4 className="text-sm font-semibold text-[#181818] flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-[#2C523C]" />
                 <span>Historial de preparaciones ({recipeLogs.length})</span>
               </h4>
-              <button
-                onClick={() => setShowAddDateBox(true)}
-                className="text-xs font-medium text-[#2C523C] hover:underline flex items-center gap-1 cursor-pointer"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Añadir fecha</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => onLogMeal(recipe, getTodayDateString())}
+                  className="px-2.5 py-1.5 text-xs font-semibold text-white bg-[#2C523C] hover:bg-[#234230] rounded-lg transition-colors flex items-center gap-1.5 shadow-2xs cursor-pointer"
+                >
+                  <Check className="w-3.5 h-3.5" />
+                  <span>Marcar hoy</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowAddDateBox(!showAddDateBox)}
+                  className="px-2.5 py-1.5 text-xs font-medium text-[#2C523C] bg-white hover:bg-emerald-50 border border-emerald-900/15 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>{showAddDateBox ? 'Ocultar' : 'Añadir fecha'}</span>
+                </button>
+              </div>
             </div>
 
+            {/* Inline Form to add date right here */}
+            {showAddDateBox && (
+              <form
+                onSubmit={handleLogCustomDate}
+                className="mb-4 p-4 bg-white rounded-xl border border-emerald-900/20 shadow-xs flex flex-col sm:flex-row gap-3 items-end"
+              >
+                <div className="flex-1 w-full">
+                  <label className="block text-xs font-medium text-[#555] mb-1">
+                    Fecha de preparación
+                  </label>
+                  <input
+                    type="date"
+                    value={customDate}
+                    onChange={e => setCustomDate(e.target.value)}
+                    className="w-full px-3 py-2 text-xs border border-black/15 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#2C523C]"
+                    required
+                  />
+                </div>
+                <div className="flex gap-2 shrink-0 w-full sm:w-auto">
+                  <button
+                    type="submit"
+                    className="flex-1 sm:flex-initial px-4 py-2 text-xs font-semibold text-white bg-[#2C523C] hover:bg-[#234230] rounded-lg transition-colors cursor-pointer"
+                  >
+                    Guardar fecha
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowAddDateBox(false)}
+                    className="px-3 py-2 text-xs text-[#666] hover:text-[#222] border border-black/10 rounded-lg cursor-pointer bg-stone-50"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            )}
+
             {recipeLogs.length === 0 ? (
-              <p className="text-xs text-[#888888] italic py-2">
-                Aún no has registrado preparaciones de esta receta. Pulsa "Marcar preparada hoy" cuando la cocines.
-              </p>
+              <div className="p-4 rounded-xl border border-dashed border-black/15 bg-white/70 text-center">
+                <p className="text-xs text-[#666666] mb-3">
+                  Aún no has registrado preparaciones de esta receta. Pulsa abajo para registrarla:
+                </p>
+                <div className="flex items-center justify-center gap-2 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => onLogMeal(recipe, getTodayDateString())}
+                    className="px-4 py-2 text-xs font-semibold text-white bg-[#2C523C] hover:bg-[#234230] rounded-lg transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Marcar preparada hoy ({formatDateSpanish(getTodayDateString())})</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowAddDateBox(true)}
+                    className="px-3 py-2 text-xs font-medium text-[#444] bg-white hover:bg-stone-100 border border-black/15 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Calendar className="w-3.5 h-3.5" />
+                    <span>Elegir otra fecha...</span>
+                  </button>
+                </div>
+              </div>
             ) : (
-              <div className="divide-y divide-black/[0.05] bg-white rounded-lg border border-black/[0.06] overflow-hidden">
+              <div className="divide-y divide-black/[0.05] bg-white rounded-lg border border-black/[0.06] overflow-hidden shadow-3xs">
                 {recipeLogs.map(log => (
                   <div key={log.id} className="p-3 flex items-center justify-between text-xs hover:bg-[#FAF9F6] transition-colors">
                     <div className="flex items-center gap-3">
-                      <span className="font-medium text-[#222] tabular-nums">
+                      <span className="font-semibold text-[#183B28] tabular-nums flex items-center gap-1.5">
+                        <Check className="w-3.5 h-3.5 text-[#2C523C]" />
                         {formatDateSpanish(log.date)}
                       </span>
-                      {log.notes && (
-                        <span className="text-[#666] text-[11px] bg-stone-100 px-2 py-0.5 rounded">
-                          {log.notes}
-                        </span>
-                      )}
                     </div>
                     <button
+                      type="button"
                       onClick={() => onDeleteLog(log.id)}
                       title="Eliminar este registro"
-                      className="text-[#999] hover:text-rose-600 transition-colors p-1 cursor-pointer"
+                      className="text-[#999] hover:text-rose-600 transition-colors p-1.5 rounded hover:bg-rose-50 cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>

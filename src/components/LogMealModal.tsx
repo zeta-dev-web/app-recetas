@@ -18,7 +18,6 @@ export const LogMealModal: React.FC<LogMealModalProps> = ({
 }) => {
   const [date, setDate] = useState<string>(getTodayDateString());
   const [mealType, setMealType] = useState<MealType>(recipe?.mealType || 'almuerzo');
-  const [notes, setNotes] = useState<string>('');
 
   if (!isOpen || !recipe) return null;
 
@@ -34,7 +33,7 @@ export const LogMealModal: React.FC<LogMealModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!date) return;
-    onSave(recipe, date, mealType, notes.trim() || undefined);
+    onSave(recipe, date, mealType);
     onClose();
   };
 
@@ -136,19 +135,6 @@ export const LogMealModal: React.FC<LogMealModalProps> = ({
             </select>
           </div>
 
-          {/* Notes */}
-          <div>
-            <label className="block text-[11px] font-medium text-[#666] mb-1">
-              Nota o variación (opcional):
-            </label>
-            <input
-              type="text"
-              placeholder="Ej. 'Agregué semillas de sésamo extra'"
-              value={notes}
-              onChange={e => setNotes(e.target.value)}
-              className="w-full px-3 py-2 text-xs border border-black/15 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#2C523C]"
-            />
-          </div>
 
           <div className="pt-3 border-t border-black/[0.06] flex justify-end gap-2">
             <button

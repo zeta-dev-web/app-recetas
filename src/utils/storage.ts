@@ -1,7 +1,7 @@
 import { Recipe, PrepLog, MealType, CookingMethod } from '../types';
 import { INITIAL_RECIPES } from '../data/initialRecipes';
 
-const STORAGE_RECIPES_KEY = 'savia_keto_recipes_v11';
+const STORAGE_RECIPES_KEY = 'savia_keto_recipes_v12';
 const STORAGE_PREP_LOGS_KEY = 'savia_keto_logs_v5';
 
 // Seed initial meal history so the 7-day Bitácora has immediate visual context

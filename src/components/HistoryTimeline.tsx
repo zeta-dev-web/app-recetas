@@ -426,11 +426,6 @@ export const HistoryTimeline: React.FC<HistoryTimelineProps> = ({
                                 {log.recipeTitle}
                               </h4>
 
-                              {log.notes && (
-                                <p className="text-[11px] text-[#666] truncate italic mt-0.5">
-                                  {log.notes}
-                                </p>
-                              )}
                             </div>
                           </div>
 

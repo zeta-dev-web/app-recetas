@@ -14,7 +14,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 42,
     carbsGrams: 5,
     fatsGrams: 39,
-    imageUrl: '/src/assets/images/recipe_churrasco_coliflor_1792713325916.jpg',
+    imageUrl: '/images/recipe_churrasco_coliflor_1792713325916.jpg',
     description: 'Muslo de pollo deshuesado dorado a la plancha con orégano y provenzal, acompañado de ensalada fresca de rúcula, tomate y palta.',
     ingredients: [
       '180g de muslo de pollo deshuesado sin piel',
@@ -79,7 +79,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 28,
     carbsGrams: 5,
     fatsGrams: 36,
-    imageUrl: '/src/assets/images/recipe_omelette_espinaca_1792713324934.jpg',
+    imageUrl: '/images/recipe_omelette_espinaca_1792713324934.jpg',
     description: 'Zuchinis en cubos tiernizados en manteca con huevos revueltos cremosos y queso fundido al momento.',
     ingredients: [
       '3 huevos de campo',
@@ -144,7 +144,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 45,
     carbsGrams: 6,
     fatsGrams: 42,
-    imageUrl: '/src/assets/images/recipe_bife_chorizo_1792712404795.jpg',
+    imageUrl: '/images/recipe_bife_chorizo_1792712404795.jpg',
     description: 'Corte tierno de ojo de bife a la plancha a fuego vivo, acompañado de puré suave de coliflor emulsionado con manteca y nuez moscada.',
     ingredients: [
       '200g de ojo de bife',
@@ -205,7 +205,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 42,
     carbsGrams: 4,
     fatsGrams: 38,
-    imageUrl: '/src/assets/images/recipe_hamburguesa_huevo_1792713324729.jpg',
+    imageUrl: '/images/recipe_hamburguesa_huevo_1792713324729.jpg',
     description: 'Hamburguesas caseras de cerdo a la plancha cubiertas con mozzarella fundida y ensalada fresca con aceite de oliva.',
     ingredients: [
       '180g de carne picada de cerdo',
@@ -270,7 +270,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 24,
     carbsGrams: 9,
     fatsGrams: 37,
-    imageUrl: '/src/assets/images/recipe_tarta_keto_espinaca_1792712405870.jpg',
+    imageUrl: '/images/recipe_tarta_keto_espinaca_1792712405870.jpg',
     description: 'Capas de berenjena grillada gratinadas al horno con salsa de tomate natural casera, abundante mozzarella fundida y queso sardo rallado.',
     ingredients: [
       '180g de berenjenas en rodajas',
@@ -335,7 +335,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 45,
     carbsGrams: 4,
     fatsGrams: 27,
-    imageUrl: '/src/assets/images/recipe_merluza_acelga_1792713325749.jpg',
+    imageUrl: '/images/recipe_merluza_acelga_1792713325749.jpg',
     description: 'Filetes de merluza salteados a la sartén en manteca dorada con provenzal aromática, servidos con acelga cocida y huevo duro.',
     ingredients: [
       '220g de filete de merluza fresca',
@@ -400,7 +400,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 48,
     carbsGrams: 4,
     fatsGrams: 34,
-    imageUrl: '/src/assets/images/recipe_bife_chorizo_1792712404795.jpg',
+    imageUrl: '/images/recipe_bife_chorizo_1792712404795.jpg',
     description: 'Finas lonjas de peceto frío cocido marinadas en vinagreta casera de oliva extra virgen y limón, servidas con ensalada fresca.',
     ingredients: [
       '200g de peceto cocido feteado en frío',
@@ -461,7 +461,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 26,
     carbsGrams: 5,
     fatsGrams: 36,
-    imageUrl: '/src/assets/images/recipe_tarta_keto_espinaca_1792712405870.jpg',
+    imageUrl: '/images/recipe_tarta_keto_espinaca_1792712405870.jpg',
     description: 'Tortilla esponjosa y dorada de zuchini rallado bien escurrido con queso sardo estacionado y huevos de campo.',
     ingredients: [
       '3 huevos de campo',
@@ -526,7 +526,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 44,
     carbsGrams: 5,
     fatsGrams: 40,
-    imageUrl: '/src/assets/images/recipe_churrasco_coliflor_1792713325916.jpg',
+    imageUrl: '/images/recipe_churrasco_coliflor_1792713325916.jpg',
     description: 'Medallones tiernos de carré de cerdo horneados a punto con guarnición untuosa de espinacas frescas a la crema y nuez moscada.',
     ingredients: [
       '180g de carré de cerdo',
@@ -589,7 +589,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 38,
     carbsGrams: 5,
     fatsGrams: 35,
-    imageUrl: '/src/assets/images/recipe_pollo_brocoli_palta_1792712404721.jpg',
+    imageUrl: '/images/recipe_pollo_brocoli_palta_1792712404721.jpg',
     description: 'Ensalada saciante y fresca con lomitos de atún escurridos, huevo duro picado, media palta en rodajas y lechuga con oliva virgen.',
     ingredients: [
       '120g de atún en conserva escurrido',
@@ -656,7 +656,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 46,
     carbsGrams: 5,
     fatsGrams: 38,
-    imageUrl: '/src/assets/images/recipe_bife_chorizo_1792712404795.jpg',
+    imageUrl: '/images/recipe_bife_chorizo_1792712404795.jpg',
     description: 'Cuadril sellado jugoso a la plancha cubierto de pimientos verdes salteados en manteca con guarnición de ensalada verde fresca.',
     ingredients: [
       '200g de bife de cuadril',
@@ -720,7 +720,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 32,
     carbsGrams: 4,
     fatsGrams: 36,
-    imageUrl: '/src/assets/images/recipe_omelette_espinaca_1792713324934.jpg',
+    imageUrl: '/images/recipe_omelette_espinaca_1792713324934.jpg',
     description: 'Clásico omelette doblado relleno de jamón en tiras y mozzarella fundida aromatizada con orégano, con guarnición de tomate fresco.',
     ingredients: [
       '3 huevos de campo',
@@ -787,7 +787,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 45,
     carbsGrams: 6,
     fatsGrams: 35,
-    imageUrl: '/src/assets/images/recipe_pollo_brocoli_palta_1792712404721.jpg',
+    imageUrl: '/images/recipe_pollo_brocoli_palta_1792712404721.jpg',
     description: 'Pechuga de pollo a la plancha bien dorada con crujiente ensalada de repollo fino, tomate y palta aderezada con oliva virgen.',
     ingredients: [
       '180g de pechuga de pollo',
@@ -852,7 +852,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 46,
     carbsGrams: 2,
     fatsGrams: 43,
-    imageUrl: '/src/assets/images/recipe_hamburguesa_huevo_1792713324729.jpg',
+    imageUrl: '/images/recipe_hamburguesa_huevo_1792713324729.jpg',
     description: 'Hamburguesas de pura carne vacuna a la plancha fundidas con queso cremoso y coronadas con huevo frito de yema tierna.',
     ingredients: [
       '180g de carne picada de res',
@@ -917,7 +917,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 44,
     carbsGrams: 3,
     fatsGrams: 41,
-    imageUrl: '/src/assets/images/recipe_bife_chorizo_1792712404795.jpg',
+    imageUrl: '/images/recipe_bife_chorizo_1792712404795.jpg',
     description: 'Matambre a la plancha crocante por fuera y tierno por dentro, servido con ensalada de rúcula y hebras de queso sardo o parmesano.',
     ingredients: [
       '180g de matambre de res o cerdo',
@@ -979,7 +979,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 44,
     carbsGrams: 6,
     fatsGrams: 32,
-    imageUrl: '/src/assets/images/recipe_wok_pollo_zuchini_1792713326934.jpg',
+    imageUrl: '/images/recipe_wok_pollo_zuchini_1792713326934.jpg',
     description: 'Pollo en tiras tiernizado y salteado al wok en abundante manteca con ajo aromático y floretes de brócoli al dente.',
     ingredients: [
       '180g de pollo en tiras',
@@ -1042,7 +1042,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 47,
     carbsGrams: 6,
     fatsGrams: 45,
-    imageUrl: '/src/assets/images/recipe_bife_chorizo_1792712404795.jpg',
+    imageUrl: '/images/recipe_bife_chorizo_1792712404795.jpg',
     description: 'Sabroso bife de chorizo a la plancha bien sellado con ensalada fresca de radicheta suave, tomate y palta en láminas con oliva virgen.',
     ingredients: [
       '200g de bife de chorizo',
@@ -1107,7 +1107,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 26,
     carbsGrams: 5,
     fatsGrams: 37,
-    imageUrl: '/src/assets/images/recipe_tarta_keto_espinaca_1792712405870.jpg',
+    imageUrl: '/images/recipe_tarta_keto_espinaca_1792712405870.jpg',
     description: 'Suave flan o tarta salada keto horneada sin masa, con acelga tiernizada, crema de leche y dados fundidos de queso cremoso.',
     ingredients: [
       '150g de acelga cocida bien escurrida',
@@ -1172,7 +1172,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 42,
     carbsGrams: 5,
     fatsGrams: 38,
-    imageUrl: '/src/assets/images/recipe_churrasco_coliflor_1792713325916.jpg',
+    imageUrl: '/images/recipe_churrasco_coliflor_1792713325916.jpg',
     description: 'Medallones de cerdo jugosos a la plancha salseados con crema tibia a la mostaza, acompañados de ensalada de tomate con oliva.',
     ingredients: [
       '180g de medallones de cerdo',
@@ -1236,7 +1236,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 42,
     carbsGrams: 6,
     fatsGrams: 37,
-    imageUrl: '/src/assets/images/recipe_medallones_res_queso_1792712404767.jpg',
+    imageUrl: '/images/recipe_medallones_res_queso_1792712404767.jpg',
     description: 'Carne picada de res salteada con pimiento verde en juliana y bastones de zuchini aromatizada con comino, servida con palta fresca.',
     ingredients: [
       '180g de carne picada de res',
@@ -1303,7 +1303,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 44,
     carbsGrams: 6,
     fatsGrams: 28,
-    imageUrl: '/src/assets/images/recipe_merluza_acelga_1792713325749.jpg',
+    imageUrl: '/images/recipe_merluza_acelga_1792713325749.jpg',
     description: 'Pescado blanco tierno a la plancha aromatizado con manteca y jugo de limón fresco, sobre suave puré de coliflor.',
     ingredients: [
       '220g de filete de merluza fresca',
@@ -1363,7 +1363,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 28,
     carbsGrams: 4,
     fatsGrams: 35,
-    imageUrl: '/src/assets/images/recipe_omelette_espinaca_1792713324934.jpg',
+    imageUrl: '/images/recipe_omelette_espinaca_1792713324934.jpg',
     description: 'Hojas frescas de espinaca salteadas en oliva con huevos revueltos suaves y queso cremoso derretido.',
     ingredients: [
       '3 huevos de campo',
@@ -1428,7 +1428,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 42,
     carbsGrams: 4,
     fatsGrams: 40,
-    imageUrl: '/src/assets/images/recipe_pollo_brocoli_palta_1792712404721.jpg',
+    imageUrl: '/images/recipe_pollo_brocoli_palta_1792712404721.jpg',
     description: 'Pata y muslo al horno con piel crujiente dorada a la provenzal, servido con refrescante ensalada mixta.',
     ingredients: [
       '250g de muslo de pollo con hueso y piel',
@@ -1489,7 +1489,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 28,
     carbsGrams: 4,
     fatsGrams: 36,
-    imageUrl: '/src/assets/images/recipe_omelette_espinaca_1792713324934.jpg',
+    imageUrl: '/images/recipe_omelette_espinaca_1792713324934.jpg',
     description: 'Omelette tierno y fundente relleno de queso cremoso y cubos de tomate fresco perfumados con orégano.',
     ingredients: [
       '3 huevos de campo',
@@ -1554,7 +1554,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 46,
     carbsGrams: 6,
     fatsGrams: 39,
-    imageUrl: '/src/assets/images/recipe_bife_chorizo_1792712404795.jpg',
+    imageUrl: '/images/recipe_bife_chorizo_1792712404795.jpg',
     description: 'Bife magro de nalga sellado rápidamente a la plancha fundido con manteca de ajo casera, con ensalada crujiente de repollo y palta.',
     ingredients: [
       '200g de bife de nalga',
@@ -1617,7 +1617,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 42,
     carbsGrams: 5,
     fatsGrams: 32,
-    imageUrl: '/src/assets/images/recipe_wok_pollo_zuchini_1792713326934.jpg',
+    imageUrl: '/images/recipe_wok_pollo_zuchini_1792713326934.jpg',
     description: 'Tiras de pollo salteadas a fuego vivo en wok con manteca o aceite de coco, bastones de zuchini y tiras de pimiento verde.',
     ingredients: [
       '180g de pollo en tiras',
@@ -1681,7 +1681,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 47,
     carbsGrams: 5,
     fatsGrams: 43,
-    imageUrl: '/src/assets/images/recipe_bife_chorizo_1792712404795.jpg',
+    imageUrl: '/images/recipe_bife_chorizo_1792712404795.jpg',
     description: 'Colita de cuadril sellada y asada al horno en rodajas jugosas, acompañada de rúcula, tomate y nueces crocantes aderezadas con oliva.',
     ingredients: [
       '200g de colita de cuadril',
@@ -1745,7 +1745,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 44,
     carbsGrams: 3,
     fatsGrams: 37,
-    imageUrl: '/src/assets/images/recipe_hamburguesa_huevo_1792713324729.jpg',
+    imageUrl: '/images/recipe_hamburguesa_huevo_1792713324729.jpg',
     description: 'Hamburguesas caseras de res doradas a la sartén cubiertas de abundante mozzarella fundida, servidas con ensalada fresca.',
     ingredients: [
       '180g de carne picada de res',
@@ -1809,7 +1809,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 44,
     carbsGrams: 5,
     fatsGrams: 38,
-    imageUrl: '/src/assets/images/recipe_churrasco_coliflor_1792713325916.jpg',
+    imageUrl: '/images/recipe_churrasco_coliflor_1792713325916.jpg',
     description: 'Churrasco de cerdo dorado a la plancha acompañado de brócoli al vapor gratinado al horno con manteca y queso sardo rallado.',
     ingredients: [
       '180g de churrasco de cerdo',
@@ -1871,7 +1871,7 @@ export const RECIPES_DAYS_16_TO_30: Recipe[] = [
     proteinGrams: 46,
     carbsGrams: 5,
     fatsGrams: 37,
-    imageUrl: '/src/assets/images/recipe_pollo_brocoli_palta_1792712404721.jpg',
+    imageUrl: '/images/recipe_pollo_brocoli_palta_1792712404721.jpg',
     description: 'Ensalada gourmet de cierre del ciclo keto con pollo desmenuzado, huevo duro, palta fresca, lechuga crocante y aceite de oliva virgen.',
     ingredients: [
       '180g de pollo desmenuzado cocido',

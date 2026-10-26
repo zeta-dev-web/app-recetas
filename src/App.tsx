@@ -15,7 +15,8 @@ import {
   BookOpen,
   Clock,
   Flame,
-  ChefHat
+  ChefHat,
+  Sparkles
 } from 'lucide-react';
 import { Recipe, PrepLog, MealType, CookingMethod, ActiveTab, SortOption, RecencyFilter, TimeFilter } from './types';
 import {
@@ -38,6 +39,7 @@ import { HistoryTimeline } from './components/HistoryTimeline';
 import { KetoGuideView } from './components/KetoGuideView';
 import { ShoppingListView } from './components/ShoppingListView';
 import { ExportModal } from './components/ExportModal';
+import { KetoAiChatModal } from './components/KetoAiChatModal';
 
 export default function App() {
   const [recipes, setRecipes] = useState<Recipe[]>(() => loadRecipes());
@@ -57,6 +59,8 @@ export default function App() {
   const [recipeForLogModal, setRecipeForLogModal] = useState<Recipe | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [isAiChatOpen, setIsAiChatOpen] = useState(false);
+  const [chatRecipeContext, setChatRecipeContext] = useState<Recipe | null>(null);
 
   // Toast feedback
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -251,6 +255,10 @@ export default function App() {
         onTabChange={setActiveTab}
         onOpenAddModal={() => setIsAddModalOpen(true)}
         onOpenExportModal={() => setIsExportModalOpen(true)}
+        onOpenAiChat={() => {
+          setChatRecipeContext(null);
+          setIsAiChatOpen(true);
+        }}
       />
 
       {/* Main Content Area */}
@@ -391,51 +399,37 @@ export default function App() {
                   )}
                 </div>
 
-                {/* Preparation Time Filter */}
-                <div className="flex items-center gap-1.5 bg-white border border-black/15 rounded-xl px-2.5 py-1.5 text-xs">
-                  <Clock className="w-3.5 h-3.5 text-[#666]" />
-                  <select
-                    value={selectedTimeFilter}
-                    onChange={e => setSelectedTimeFilter(e.target.value as TimeFilter)}
-                    className="bg-transparent text-xs text-[#333] focus:outline-none cursor-pointer"
-                  >
-                    <option value="all">Tiempo: Todos</option>
-                    <option value="quick">Rápidas (≤ 15 min)</option>
-                    <option value="medium">Medias (16 - 30 min)</option>
-                    <option value="slow">Lentas (&gt; 30 min al horno)</option>
-                  </select>
-                </div>
+                {/* Time & Frequency Filters (same row in mobile via grid-cols-2) */}
+                <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 sm:gap-3">
+                  {/* Preparation Time Filter */}
+                  <div className="flex items-center gap-1.5 bg-white border border-black/15 rounded-xl px-2.5 py-1.5 text-xs w-full">
+                    <Clock className="w-3.5 h-3.5 text-[#666] shrink-0" />
+                    <select
+                      value={selectedTimeFilter}
+                      onChange={e => setSelectedTimeFilter(e.target.value as TimeFilter)}
+                      className="bg-transparent text-xs text-[#333] focus:outline-none cursor-pointer w-full truncate"
+                    >
+                      <option value="all">Tiempo: Todos</option>
+                      <option value="quick">Rápidas (≤ 15 min)</option>
+                      <option value="medium">Medias (16 - 30 min)</option>
+                      <option value="slow">Lentas (&gt; 30 min)</option>
+                    </select>
+                  </div>
 
-                {/* Recency repetition filter */}
-                <div className="flex items-center gap-1.5 bg-white border border-black/15 rounded-xl px-2.5 py-1.5 text-xs">
-                  <SlidersHorizontal className="w-3.5 h-3.5 text-[#666]" />
-                  <select
-                    value={recencyFilter}
-                    onChange={e => setRecencyFilter(e.target.value as RecencyFilter)}
-                    className="bg-transparent text-xs text-[#333] focus:outline-none cursor-pointer"
-                  >
-                    <option value="all">Frecuencia: Todas</option>
-                    <option value="not_this_week">No preparadas esta semana (≥7d)</option>
-                    <option value="never">Sin preparar aún</option>
-                    <option value="recent_week">Preparadas recientemente (≤7d)</option>
-                  </select>
-                </div>
-
-                {/* Sort selector */}
-                <div className="flex items-center gap-1.5 bg-white border border-black/15 rounded-xl px-2.5 py-1.5 text-xs">
-                  <ArrowUpDown className="w-3.5 h-3.5 text-[#666]" />
-                  <select
-                    value={sortBy}
-                    onChange={e => setSortBy(e.target.value as SortOption)}
-                    className="bg-transparent text-xs text-[#333] focus:outline-none cursor-pointer"
-                  >
-                    <option value="plan_order">Orden del Plan (Día 1 a 15)</option>
-                    <option value="recommended">Recomendadas (menos repetidas)</option>
-                    <option value="time_asc">Tiempo prep. (menor a mayor)</option>
-                    <option value="time_desc">Tiempo prep. (mayor a menor)</option>
-                    <option value="name_asc">Nombre (A - Z)</option>
-                    <option value="last_cooked">Última vez cocinada</option>
-                  </select>
+                  {/* Recency repetition filter */}
+                  <div className="flex items-center gap-1.5 bg-white border border-black/15 rounded-xl px-2.5 py-1.5 text-xs w-full">
+                    <SlidersHorizontal className="w-3.5 h-3.5 text-[#666] shrink-0" />
+                    <select
+                      value={recencyFilter}
+                      onChange={e => setRecencyFilter(e.target.value as RecencyFilter)}
+                      className="bg-transparent text-xs text-[#333] focus:outline-none cursor-pointer w-full truncate"
+                    >
+                      <option value="all">Frecuencia: Todas</option>
+                      <option value="not_this_week">No preparadas (≥7d)</option>
+                      <option value="never">Sin preparar aún</option>
+                      <option value="recent_week">Preparadas (≤7d)</option>
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
@@ -509,7 +503,7 @@ export default function App() {
       <footer className="mt-auto border-t border-black/[0.06] bg-[#FAF9F6] py-6 text-center text-xs text-[#737373]">
         <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-[#222]">Savia Keto</span>
+            <span className="font-semibold text-[#222] lowercase">zeta-keto</span>
             <span>·</span>
             <span>Plan Cetogénico de 30 Días & Bitácora de 7 Días</span>
           </div>
@@ -556,6 +550,10 @@ export default function App() {
         }}
         onDeleteLog={handleDeleteLog}
         onDeleteRecipe={handleDeleteRecipe}
+        onOpenAiChat={(recipe) => {
+          setChatRecipeContext(recipe);
+          setIsAiChatOpen(true);
+        }}
       />
 
       {/* 2. Add Recipe Modal */}
@@ -581,6 +579,30 @@ export default function App() {
         logs={logs}
         onImportData={handleImportData}
         onResetDefaults={handleResetDefaults}
+      />
+
+      {/* Floating AI Assistant Trigger (always accessible) */}
+      <button
+        onClick={() => {
+          setChatRecipeContext(null);
+          setIsAiChatOpen(true);
+        }}
+        className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-30 bg-[#2C523C] hover:bg-[#1E3B2A] text-white p-3.5 sm:px-4 sm:py-3 rounded-full shadow-lg hover:shadow-xl transition-all flex items-center gap-2 group cursor-pointer border border-emerald-400/25"
+        title="Consultar a Zeta-Keto AI"
+        aria-label="Abrir Asistente Zeta-Keto AI"
+      >
+        <Sparkles className="w-5 h-5 text-emerald-200 group-hover:scale-110 transition-transform" />
+        <span className="hidden sm:inline text-xs font-bold tracking-wide">
+          Preguntar a la IA
+        </span>
+      </button>
+
+      {/* 5. Zeta-Keto AI Chat Modal */}
+      <KetoAiChatModal
+        isOpen={isAiChatOpen}
+        onClose={() => setIsAiChatOpen(false)}
+        activeRecipeContext={chatRecipeContext}
+        onClearRecipeContext={() => setChatRecipeContext(null)}
       />
     </div>
   );

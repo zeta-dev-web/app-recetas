@@ -7,7 +7,8 @@ import {
   Flame,
   Check,
   AlertTriangle,
-  Scale,
+  ChevronDown,
+  ChevronUp,
   Plus,
   Trash2,
   Users,
@@ -23,6 +24,7 @@ import {
   formatDateSpanish,
   getTodayDateString
 } from '../utils/storage';
+import { getNutritionHe, getNutritionShe } from '../utils/nutrition';
 
 interface RecipeDetailModalProps {
   recipe: Recipe | null;
@@ -31,6 +33,7 @@ interface RecipeDetailModalProps {
   onLogMeal: (recipe: Recipe, date: string, notes?: string) => void;
   onDeleteLog: (logId: string) => void;
   onDeleteRecipe?: (recipeId: string) => void;
+  onOpenAiChat?: (recipe: Recipe) => void;
 }
 
 export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
@@ -39,13 +42,20 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
   onClose,
   onLogMeal,
   onDeleteLog,
-  onDeleteRecipe
+  onDeleteRecipe,
+  onOpenAiChat
 }) => {
   const [checkedIngredients, setCheckedIngredients] = useState<Record<number, boolean>>({});
   const [portionMultiplier, setPortionMultiplier] = useState<1 | 2>(2); // Default to 2 porciones as requested
   const [customDate, setCustomDate] = useState<string>(getTodayDateString());
   const [showAddDateBox, setShowAddDateBox] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [isHeOpen, setIsHeOpen] = useState(false);
+  const [isSheOpen, setIsSheOpen] = useState(false);
+  const [isSingleServingOpen, setIsSingleServingOpen] = useState(false);
+  const [isNutritionOpen, setIsNutritionOpen] = useState(false);
+  const [isNutritionHeOpen, setIsNutritionHeOpen] = useState(true);
+  const [isNutritionSheOpen, setIsNutritionSheOpen] = useState(true);
 
   if (!recipe) return null;
 
@@ -73,14 +83,27 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
   const servingHe = cooked?.servingHe;
   const servingShe = cooked?.servingShe;
 
+  const nutritionHe = getNutritionHe(recipe);
+  const nutritionShe = getNutritionShe(recipe);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-xs overflow-y-auto animate-fade-in">
       <div
         className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl border border-black/[0.08] overflow-hidden my-auto max-h-[92vh] flex flex-col"
         onClick={e => e.stopPropagation()}
       >
-        {/* Sticky Header with Close */}
+        {/* Sticky Header with Close and AI Consultation */}
         <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+          {onOpenAiChat && (
+            <button
+              onClick={() => onOpenAiChat(recipe)}
+              className="h-9 px-3 rounded-full bg-white/90 hover:bg-white text-[#2C523C] flex items-center gap-1.5 shadow-md transition-colors cursor-pointer text-xs font-bold border border-emerald-900/10"
+              title="Preguntar a la IA sobre esta receta o reemplazos"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-emerald-700" />
+              <span className="hidden sm:inline">Consultar IA</span>
+            </button>
+          )}
           <button
             onClick={onClose}
             className="w-9 h-9 rounded-full bg-white/90 hover:bg-white text-[#222] flex items-center justify-center shadow-md transition-colors cursor-pointer focus:outline-none"
@@ -219,278 +242,227 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
             </form>
           )}
 
-          {/* HIGHLIGHTED SECTION: SELECTOR 1 PORCIÓN ÉL vs 2 PORCIONES */}
-          <div className="p-5 sm:p-6 bg-gradient-to-br from-emerald-50/80 via-stone-50 to-[#FAF9F6] border-y border-emerald-900/10">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-[#2C523C] text-white flex items-center justify-center shrink-0 shadow-2xs">
-                  <Scale className="w-4.5 h-4.5" />
-                </div>
-                <div>
-                  <h3 className="text-sm sm:text-base font-bold text-[#1A1A1A]">
-                    {portionMultiplier === 1
-                      ? 'Cocinar para ti solo (1 porción Él)'
-                      : '2 Porciones: Proporción Él vs Ella y regla de servido'}
-                  </h3>
-                  <p className="text-[11px] text-[#666]">
-                    {portionMultiplier === 1
-                      ? 'Cantidades y pesaje en balanza para cocinar solo para ti'
-                      : 'Cantidades combinadas para cocinar juntos y qué servir en el plato de cada uno'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Comensales Selector (1 porcion El vs 2 porciones) */}
-              <div className="inline-flex items-center p-1 bg-white border border-black/10 rounded-xl shrink-0 self-start sm:self-auto shadow-3xs">
-                <button
-                  onClick={() => setPortionMultiplier(1)}
-                  className={`px-3 py-1.5 text-xs rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer ${
-                    portionMultiplier === 1
-                      ? 'bg-[#2C523C] text-white font-semibold shadow-xs'
-                      : 'text-[#666] hover:text-[#1A1A1A]'
-                  }`}
-                >
-                  <span>1 porción Él</span>
-                </button>
-                <button
-                  onClick={() => setPortionMultiplier(2)}
-                  className={`px-3 py-1.5 text-xs rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer ${
-                    portionMultiplier === 2
-                      ? 'bg-[#2C523C] text-white font-semibold shadow-xs'
-                      : 'text-[#666] hover:text-[#1A1A1A]'
-                  }`}
-                >
-                  <Users className="w-3.5 h-3.5" />
-                  <span>2 porciones</span>
-                </button>
-              </div>
+          {/* 1. SELECTOR: 1 PORCIÓN vs 2 PORCIONES */}
+          <div className="p-4 sm:p-5 bg-[#FAF9F6] border-b border-black/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <span className="text-xs font-bold text-[#1A1A1A] block">Porciones a preparar</span>
+              <span className="text-[11px] text-[#666]">
+                {portionMultiplier === 1
+                  ? 'Cantidades ajustadas para 1 porción'
+                  : 'Cantidades combinadas para 2 porciones'}
+              </span>
             </div>
 
-            {/* Cooked Breakdown Section */}
-            {portionMultiplier === 1 ? (
-              /* MODE: 1 PORCION EL */
-              <div className="space-y-3">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="bg-white p-3.5 rounded-xl border border-black/[0.06] shadow-3xs">
-                    <span className="text-[10px] font-bold text-[#2C523C] uppercase tracking-wider block mb-1">
-                      🥩 Proteína cocida para tu plato
-                    </span>
-                    <span className="text-xs sm:text-sm font-bold text-[#181818] block leading-snug">
-                      {servingHe?.proteinCooked || cooked?.cookedProtein || 'Según porción'}
-                    </span>
-                    <span className="text-[11px] text-[#737373] block mt-1">
-                      (Considera merma habitual por cocción en carnes)
-                    </span>
-                  </div>
+            <div className="inline-flex items-center p-1 bg-white border border-black/10 rounded-xl shrink-0 self-start sm:self-auto shadow-3xs">
+              <button
+                type="button"
+                onClick={() => setPortionMultiplier(1)}
+                className={`px-3.5 py-1.5 text-xs rounded-lg transition-colors cursor-pointer ${
+                  portionMultiplier === 1
+                    ? 'bg-[#2C523C] text-white font-semibold shadow-xs'
+                    : 'text-[#666] hover:text-[#1A1A1A]'
+                }`}
+              >
+                1 porción
+              </button>
+              <button
+                type="button"
+                onClick={() => setPortionMultiplier(2)}
+                className={`px-3.5 py-1.5 text-xs rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer ${
+                  portionMultiplier === 2
+                    ? 'bg-[#2C523C] text-white font-semibold shadow-xs'
+                    : 'text-[#666] hover:text-[#1A1A1A]'
+                }`}
+              >
+                <Users className="w-3.5 h-3.5" />
+                <span>2 porciones</span>
+              </button>
+            </div>
+          </div>
 
-                  <div className="bg-white p-3.5 rounded-xl border border-black/[0.06] shadow-3xs">
-                    <span className="text-[10px] font-bold text-[#2C523C] uppercase tracking-wider block mb-1">
-                      🥗 Vegetales & Guarnición para tu plato
-                    </span>
-                    <span className="text-xs sm:text-sm font-bold text-[#181818] block leading-snug">
-                      {servingHe?.sides || cooked?.cookedSides || 'Según porción'}
-                    </span>
-                    {servingHe?.fatsAndToppings && (
-                      <span className="text-[11px] text-[#737373] block mt-1">
-                        Aderezo / Grasas: {servingHe.fatsAndToppings}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="bg-emerald-950/5 border border-emerald-900/10 p-3.5 rounded-xl text-xs text-[#1F3E2C] flex items-start gap-2.5">
-                  <Info className="w-4 h-4 text-[#2C523C] shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-bold text-[13px] block mb-0.5">
-                      Servir en tu plato:
-                    </span>
-                    <p className="leading-relaxed text-[#2C523C]">
-                      {servingHe?.ruleNote || 'Pesar la proteína recién salida del fuego y acompañar con la guarnición aderezada.'}
-                    </p>
-                    <span className="text-[11px] text-[#557762] block mt-1 font-semibold">
-                      ⚖️ Peso total servido en tu plato: {servingHe?.plateTotalApprox || cooked?.plateTotalApprox || '~280g'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              /* MODE: 2 PORCIONES (QUE SERVIR PARA CADA UNO - EXACTO DEL PLAN) */
-              <div className="space-y-3">
-                {/* Rule summary banner */}
-                {cooked?.servingRuleSummary && (
-                  <div className="bg-emerald-900/10 border border-emerald-900/15 p-3.5 rounded-xl text-xs text-[#163323] flex items-start gap-2.5">
-                    <Sparkles className="w-4 h-4 text-[#2C523C] shrink-0 mt-0.5" />
-                    <div>
-                      <span className="font-bold text-[12px] uppercase tracking-wide block mb-0.5 text-[#2C523C]">
-                        Regla de servido y emplatado del plan:
-                      </span>
-                      <p className="leading-relaxed font-medium">
-                        {cooked.servingRuleSummary}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Two Distinct Differential Cards: Para Él vs Para Ella */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {/* Card 1: Para Él */}
-                  <div className="bg-white p-4 rounded-xl border-2 border-emerald-800/20 shadow-2xs">
-                    <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-black/[0.06]">
-                      <span className="text-xs sm:text-sm font-bold text-[#183B28] flex items-center gap-1.5">
-                        <span>👨 Para Él</span>
-                        {servingHe?.percentage && (
-                          <span className="text-[11px] font-extrabold bg-[#2C523C] text-white px-2 py-0.5 rounded-full">
-                            {servingHe.percentage}
-                          </span>
-                        )}
-                      </span>
-                      <span className="text-[11px] font-bold bg-[#EEF4F0] text-[#183B28] px-2.5 py-0.5 rounded-md">
-                        {servingHe?.plateTotalApprox || '~290g en plato'}
+          {/* 2. DESPLEGABLES COMPRIMIDOS: PARA ÉL Y PARA ELLA */}
+          <div className="p-4 sm:p-5 bg-white border-b border-black/[0.06] space-y-2.5">
+            {portionMultiplier === 2 ? (
+              <>
+                {/* Desplegable 1: Para Él */}
+                <div className="border border-emerald-900/15 rounded-xl overflow-hidden shadow-3xs bg-[#FCFCFA]">
+                  <button
+                    type="button"
+                    onClick={() => setIsHeOpen(!isHeOpen)}
+                    className="w-full px-4 py-3 text-left flex items-center justify-between bg-white hover:bg-[#F9F8F5] transition-colors cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs sm:text-sm font-bold text-[#183B28]">👨 Para Él</span>
+                      {servingHe?.percentage && (
+                        <span className="text-[10px] font-bold bg-[#2C523C] text-white px-2 py-0.5 rounded-full">
+                          {servingHe.percentage}
+                        </span>
+                      )}
+                      <span className="text-[11px] text-[#666] hidden sm:inline">
+                        ({servingHe?.plateTotalApprox || '~290g en plato'})
                       </span>
                     </div>
-                    <div className="space-y-2 text-xs text-[#333]">
-                      <div>
-                        <span className="text-[10px] text-[#777] block uppercase font-semibold">🥩 Proteína cocida servida:</span>
-                        <span className="font-bold text-[#1A1A1A]">{servingHe?.proteinCooked}</span>
-                      </div>
-                      <div>
-                        <span className="text-[10px] text-[#777] block uppercase font-semibold">🥗 Vegetales & guarnición:</span>
-                        <span className="font-medium text-[#222]">{servingHe?.sides}</span>
+                    <div className="flex items-center gap-1 text-[#2C523C] text-xs font-medium">
+                      <span className="text-[11px]">{isHeOpen ? 'Ocultar' : 'Ver detalle'}</span>
+                      {isHeOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                    </div>
+                  </button>
+
+                  {isHeOpen && (
+                    <div className="p-4 border-t border-black/[0.06] space-y-2.5 text-xs text-[#333] bg-[#FAF9F6]">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <div className="bg-white p-2.5 rounded-lg border border-black/[0.05]">
+                          <span className="text-[10px] text-[#777] block uppercase font-semibold">🥩 Proteína cocida servida:</span>
+                          <span className="font-bold text-[#1A1A1A]">{servingHe?.proteinCooked || cooked?.cookedProtein || 'Según porción'}</span>
+                        </div>
+                        <div className="bg-white p-2.5 rounded-lg border border-black/[0.05]">
+                          <span className="text-[10px] text-[#777] block uppercase font-semibold">🥗 Vegetales & guarnición:</span>
+                          <span className="font-medium text-[#222]">{servingHe?.sides || cooked?.cookedSides || 'Según porción'}</span>
+                        </div>
                       </div>
                       {servingHe?.fatsAndToppings && (
-                        <div>
+                        <div className="bg-white p-2.5 rounded-lg border border-black/[0.05]">
                           <span className="text-[10px] text-[#777] block uppercase font-semibold">🫒 Aderezos & Grasas:</span>
                           <span className="text-[#444]">{servingHe.fatsAndToppings}</span>
                         </div>
                       )}
-                      <div className="pt-2 border-t border-black/[0.05] text-[11px] text-[#2C523C] font-medium leading-relaxed">
-                        📌 {servingHe?.ruleNote}
-                      </div>
+                      {servingHe?.ruleNote && (
+                        <div className="text-[11px] text-[#2C523C] font-medium leading-relaxed bg-emerald-50/60 p-2.5 rounded-lg border border-emerald-900/10">
+                          📌 {servingHe.ruleNote}
+                        </div>
+                      )}
                     </div>
-                  </div>
+                  )}
+                </div>
 
-                  {/* Card 2: Para Ella */}
-                  <div className="bg-white p-4 rounded-xl border-2 border-emerald-800/20 shadow-2xs">
-                    <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-black/[0.06]">
-                      <span className="text-xs sm:text-sm font-bold text-[#183B28] flex items-center gap-1.5">
-                        <span>👩 Para Ella (Esposa)</span>
-                        {servingShe?.percentage && (
-                          <span className="text-[11px] font-extrabold bg-[#2C523C] text-white px-2 py-0.5 rounded-full">
-                            {servingShe.percentage}
-                          </span>
-                        )}
-                      </span>
-                      <span className="text-[11px] font-bold bg-[#EEF4F0] text-[#183B28] px-2.5 py-0.5 rounded-md">
-                        {servingShe?.plateTotalApprox || '~210g en plato'}
+                {/* Desplegable 2: Para Ella */}
+                <div className="border border-emerald-900/15 rounded-xl overflow-hidden shadow-3xs bg-[#FCFCFA]">
+                  <button
+                    type="button"
+                    onClick={() => setIsSheOpen(!isSheOpen)}
+                    className="w-full px-4 py-3 text-left flex items-center justify-between bg-white hover:bg-[#F9F8F5] transition-colors cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs sm:text-sm font-bold text-[#183B28]">👩 Para Ella</span>
+                      {servingShe?.percentage && (
+                        <span className="text-[10px] font-bold bg-[#2C523C] text-white px-2 py-0.5 rounded-full">
+                          {servingShe.percentage}
+                        </span>
+                      )}
+                      <span className="text-[11px] text-[#666] hidden sm:inline">
+                        ({servingShe?.plateTotalApprox || '~210g en plato'})
                       </span>
                     </div>
-                    <div className="space-y-2 text-xs text-[#333]">
-                      <div>
-                        <span className="text-[10px] text-[#777] block uppercase font-semibold">🥩 Proteína cocida servida:</span>
-                        <span className="font-bold text-[#1A1A1A]">{servingShe?.proteinCooked}</span>
-                      </div>
-                      <div>
-                        <span className="text-[10px] text-[#777] block uppercase font-semibold">🥗 Vegetales & guarnición:</span>
-                        <span className="font-medium text-[#222]">{servingShe?.sides}</span>
+                    <div className="flex items-center gap-1 text-[#2C523C] text-xs font-medium">
+                      <span className="text-[11px]">{isSheOpen ? 'Ocultar' : 'Ver detalle'}</span>
+                      {isSheOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                    </div>
+                  </button>
+
+                  {isSheOpen && (
+                    <div className="p-4 border-t border-black/[0.06] space-y-2.5 text-xs text-[#333] bg-[#FAF9F6]">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <div className="bg-white p-2.5 rounded-lg border border-black/[0.05]">
+                          <span className="text-[10px] text-[#777] block uppercase font-semibold">🥩 Proteína cocida servida:</span>
+                          <span className="font-bold text-[#1A1A1A]">{servingShe?.proteinCooked || 'Según porción'}</span>
+                        </div>
+                        <div className="bg-white p-2.5 rounded-lg border border-black/[0.05]">
+                          <span className="text-[10px] text-[#777] block uppercase font-semibold">🥗 Vegetales & guarnición:</span>
+                          <span className="font-medium text-[#222]">{servingShe?.sides || 'Según porción'}</span>
+                        </div>
                       </div>
                       {servingShe?.fatsAndToppings && (
-                        <div>
+                        <div className="bg-white p-2.5 rounded-lg border border-black/[0.05]">
                           <span className="text-[10px] text-[#777] block uppercase font-semibold">🫒 Aderezos & Grasas:</span>
                           <span className="text-[#444]">{servingShe.fatsAndToppings}</span>
                         </div>
                       )}
-                      <div className="pt-2 border-t border-black/[0.05] text-[11px] text-[#2C523C] font-medium leading-relaxed">
-                        📌 {servingShe?.ruleNote}
+                      {servingShe?.ruleNote && (
+                        <div className="text-[11px] text-[#2C523C] font-medium leading-relaxed bg-emerald-50/60 p-2.5 rounded-lg border border-emerald-900/10">
+                          📌 {servingShe.ruleNote}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              /* Desplegable para 1 porción */
+              <div className="border border-emerald-900/15 rounded-xl overflow-hidden shadow-3xs bg-[#FCFCFA]">
+                <button
+                  type="button"
+                  onClick={() => setIsSingleServingOpen(!isSingleServingOpen)}
+                  className="w-full px-4 py-3 text-left flex items-center justify-between bg-white hover:bg-[#F9F8F5] transition-colors cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs sm:text-sm font-bold text-[#183B28]">👨 Para tu plato (1 porción)</span>
+                    <span className="text-[11px] text-[#666]">
+                      ({servingHe?.plateTotalApprox || cooked?.plateTotalApprox || '~280g'})
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1 text-[#2C523C] text-xs font-medium">
+                    <span className="text-[11px]">{isSingleServingOpen ? 'Ocultar' : 'Ver detalle'}</span>
+                    {isSingleServingOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  </div>
+                </button>
+
+                {isSingleServingOpen && (
+                  <div className="p-4 border-t border-black/[0.06] space-y-2.5 text-xs text-[#333] bg-[#FAF9F6]">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      <div className="bg-white p-2.5 rounded-lg border border-black/[0.05]">
+                        <span className="text-[10px] text-[#777] block uppercase font-semibold">🥩 Proteína cocida servida:</span>
+                        <span className="font-bold text-[#1A1A1A]">{servingHe?.proteinCooked || cooked?.cookedProtein || 'Según porción'}</span>
+                      </div>
+                      <div className="bg-white p-2.5 rounded-lg border border-black/[0.05]">
+                        <span className="text-[10px] text-[#777] block uppercase font-semibold">🥗 Vegetales & guarnición:</span>
+                        <span className="font-medium text-[#222]">{servingHe?.sides || cooked?.cookedSides || 'Según porción'}</span>
                       </div>
                     </div>
+                    {servingHe?.fatsAndToppings && (
+                      <div className="bg-white p-2.5 rounded-lg border border-black/[0.05]">
+                        <span className="text-[10px] text-[#777] block uppercase font-semibold">🫒 Aderezos & Grasas:</span>
+                        <span className="text-[#444]">{servingHe.fatsAndToppings}</span>
+                      </div>
+                    )}
+                    <div className="text-[11px] text-[#2C523C] font-medium leading-relaxed bg-emerald-50/60 p-2.5 rounded-lg border border-emerald-900/10">
+                      📌 {servingHe?.ruleNote || 'Pesar la proteína recién salida del fuego y acompañar con la guarnición aderezada.'}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
           </div>
 
-
-          {/* Main Recipe Content: Ingredients & Instructions */}
-          <div className="p-5 sm:p-6 grid grid-cols-1 md:grid-cols-5 gap-8 bg-white">
-            {/* Ingredients (2 cols) */}
-            <div className="md:col-span-2">
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="text-sm font-semibold text-[#181818] uppercase tracking-wider">
-                  {portionMultiplier === 1
-                    ? 'Ingredientes (para ti solo)'
-                    : 'Ingredientes (proporción Él | Ella)'}
-                </h4>
-                {portionMultiplier === 2 ? (
-                  <span className="text-[10px] font-bold text-[#2C523C] bg-[#EEF4F0] px-2 py-0.5 rounded-full">
-                    Total sartén/wok
-                  </span>
-                ) : (
-                  <span className="text-[10px] font-medium text-[#777] bg-stone-100 px-2 py-0.5 rounded">
-                    1 porción Él
-                  </span>
-                )}
-              </div>
-              <p className="text-[11px] text-[#888888] mb-3">
-                {portionMultiplier === 2
-                  ? 'Cantidad exacta para cada comensal y peso total a colocar en sartén/wok:'
-                  : 'Lo que necesitas pesar en crudo para cocinar solo para ti:'}
-              </p>
-
-              {/* Differential Ingredients List (Mode 2) */}
-              {portionMultiplier === 2 && recipe.differentialIngredients && recipe.differentialIngredients.length > 0 ? (
-                <ul className="space-y-2.5">
-                  {recipe.differentialIngredients.map((diff, idx) => {
-                    const isChecked = !!checkedIngredients[idx];
-
-                    return (
-                      <li
-                        key={idx}
-                        onClick={() => toggleIngredient(idx)}
-                        className="p-2.5 rounded-xl border border-black/[0.08] bg-[#FAF9F6] hover:bg-[#F4F2EC] transition-colors cursor-pointer select-none group"
-                      >
-                        <div className="flex items-start gap-2.5">
-                          <div
-                            className={`w-4 h-4 rounded border mt-0.5 flex items-center justify-center shrink-0 transition-colors ${
-                              isChecked
-                                ? 'bg-[#2C523C] border-[#2C523C] text-white'
-                                : 'border-black/25 group-hover:border-black/50 bg-white'
-                            }`}
-                          >
-                            {isChecked && <Check className="w-3 h-3 stroke-[3]" />}
-                          </div>
-                          <div className="flex-1 text-xs">
-                            <span className={`font-semibold text-[#181818] block ${isChecked ? 'line-through text-[#999]' : ''}`}>
-                              {diff.name}
-                            </span>
-                            <div className="mt-1 flex items-center gap-2 text-[11px] text-[#555] flex-wrap">
-                              <span className="bg-white px-2 py-0.5 rounded border border-black/[0.06] font-medium">
-                                👨 Él: <strong className="text-[#1A1A1A]">{diff.he}</strong>
-                              </span>
-                              <span className="bg-white px-2 py-0.5 rounded border border-black/[0.06] font-medium">
-                                👩 Ella: <strong className="text-[#1A1A1A]">{diff.she}</strong>
-                              </span>
-                              <span className="bg-[#EEF4F0] text-[#183B28] px-2 py-0.5 rounded font-bold">
-                                Total: {diff.total}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
+          {/* 3. INGREDIENTES */}
+          <div className="p-5 sm:p-6 bg-white border-b border-black/[0.06]">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-sm font-bold text-[#181818] uppercase tracking-wider">
+                Ingredientes
+              </h4>
+              {portionMultiplier === 2 ? (
+                <span className="text-[10px] font-bold text-[#2C523C] bg-[#EEF4F0] px-2.5 py-0.5 rounded-full">
+                  Total sartén / wok
+                </span>
               ) : (
-                /* Single Portion Ingredients (Mode 1) */
-                <ul className="space-y-2.5">
-                  {recipe.ingredients.map((ing, idx) => {
-                    const isChecked = !!checkedIngredients[idx];
+                <span className="text-[10px] font-medium text-[#777] bg-stone-100 px-2 py-0.5 rounded">
+                  1 porción
+                </span>
+              )}
+            </div>
 
-                    return (
-                      <li
-                        key={idx}
-                        onClick={() => toggleIngredient(idx)}
-                        className="flex items-start gap-2.5 text-xs text-[#333333] cursor-pointer group select-none"
-                      >
+            {/* Differential Ingredients List (Mode 2) */}
+            {portionMultiplier === 2 && recipe.differentialIngredients && recipe.differentialIngredients.length > 0 ? (
+              <ul className="space-y-2.5">
+                {recipe.differentialIngredients.map((diff, idx) => {
+                  const isChecked = !!checkedIngredients[idx];
+
+                  return (
+                    <li
+                      key={idx}
+                      onClick={() => toggleIngredient(idx)}
+                      className="p-2.5 rounded-xl border border-black/[0.08] bg-[#FAF9F6] hover:bg-[#F4F2EC] transition-colors cursor-pointer select-none group"
+                    >
+                      <div className="flex items-start gap-2.5">
                         <div
                           className={`w-4 h-4 rounded border mt-0.5 flex items-center justify-center shrink-0 transition-colors ${
                             isChecked
@@ -500,101 +472,257 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
                         >
                           {isChecked && <Check className="w-3 h-3 stroke-[3]" />}
                         </div>
-                        <div className="leading-relaxed">
-                          <span className={`${isChecked ? 'line-through text-[#999999]' : 'font-medium'}`}>
-                            {ing}
+                        <div className="flex-1 text-xs">
+                          <span className={`font-semibold text-[#181818] block ${isChecked ? 'line-through text-[#999]' : ''}`}>
+                            {diff.name}
                           </span>
+                          <div className="mt-1 flex items-center gap-2 text-[11px] text-[#555] flex-wrap">
+                            <span className="bg-white px-2 py-0.5 rounded border border-black/[0.06] font-medium">
+                              👨 Él: <strong className="text-[#1A1A1A]">{diff.he}</strong>
+                            </span>
+                            <span className="bg-white px-2 py-0.5 rounded border border-black/[0.06] font-medium">
+                              👩 Ella: <strong className="text-[#1A1A1A]">{diff.she}</strong>
+                            </span>
+                            <span className="bg-[#EEF4F0] text-[#183B28] px-2 py-0.5 rounded font-bold">
+                              Total: {diff.total}
+                            </span>
+                          </div>
                         </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              /* Single Portion Ingredients (Mode 1) */
+              <ul className="space-y-2.5">
+                {recipe.ingredients.map((ing, idx) => {
+                  const isChecked = !!checkedIngredients[idx];
 
-              {/* Tags */}
-              {recipe.tags && recipe.tags.length > 0 && (
-                <div className="mt-6 pt-4 border-t border-black/[0.06]">
-                  <span className="text-[11px] font-medium text-[#777] block mb-2">Etiquetas de la receta</span>
-                  <div className="flex flex-wrap gap-1.5 text-xs text-[#666]">
-                    {recipe.tags.map((tag, i) => (
-                      <span key={i} className="text-[11px] text-[#555] bg-stone-100 px-2 py-0.5 rounded">
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Step by step Instructions (3 cols) */}
-            <div className="md:col-span-3">
-              <h4 className="text-sm font-semibold text-[#181818] uppercase tracking-wider mb-2">
-                Preparación paso a paso
-              </h4>
-              <p className="text-[11px] text-[#777] mb-3">
-                {portionMultiplier === 2
-                  ? 'Guía exacta de cocción combinada y distribución de platos para los dos:'
-                  : 'Guía de cocción para preparar tu porción individual:'}
-              </p>
-
-              <ol className="space-y-4">
-                {(portionMultiplier === 2 && recipe.instructionsCombined && recipe.instructionsCombined.length > 0
-                  ? recipe.instructionsCombined
-                  : recipe.instructions
-                ).map((step, idx) => (
-                  <li key={idx} className="flex gap-3 text-xs leading-relaxed text-[#333]">
-                    <span className="w-5 h-5 rounded-full bg-[#2C523C] text-white text-[11px] font-bold flex items-center justify-center shrink-0 tabular-nums">
-                      {idx + 1}
-                    </span>
-                    <p className="pt-0.5 flex-1">{step}</p>
-                  </li>
-                ))}
-              </ol>
-            </div>
+                  return (
+                    <li
+                      key={idx}
+                      onClick={() => toggleIngredient(idx)}
+                      className="flex items-start gap-2.5 text-xs text-[#333333] cursor-pointer group select-none p-2 rounded-lg hover:bg-[#FAF9F6]"
+                    >
+                      <div
+                        className={`w-4 h-4 rounded border mt-0.5 flex items-center justify-center shrink-0 transition-colors ${
+                          isChecked
+                            ? 'bg-[#2C523C] border-[#2C523C] text-white'
+                            : 'border-black/25 group-hover:border-black/50 bg-white'
+                        }`}
+                      >
+                        {isChecked && <Check className="w-3 h-3 stroke-[3]" />}
+                      </div>
+                      <div className="leading-relaxed">
+                        <span className={`${isChecked ? 'line-through text-[#999999]' : 'font-medium'}`}>
+                          {ing}
+                        </span>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </div>
 
-          {/* Nutritional Breakdown strip (Al final de los pasos e ingredientes) */}
-          {(recipe.calories || recipe.proteinGrams || recipe.carbsGrams || recipe.fatsGrams) && (
-            <div className="p-4 sm:p-5 bg-[#FAF9F6] border-t border-black/[0.06]">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-bold text-[#1A1A1A] uppercase tracking-wider flex items-center gap-1.5">
-                  <Flame className="w-4 h-4 text-amber-600" />
-                  <span>Valor Nutricional (porción Él)</span>
-                </span>
-                <span className="text-[11px] text-[#737373]">
-                  Valores calculados según ingredientes del plan
-                </span>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-white p-3.5 rounded-xl border border-black/[0.06] text-center shadow-3xs">
-                <div>
-                  <span className="text-[11px] text-[#737373] uppercase tracking-wider block">Calorías (porción Él)</span>
-                  <span className="text-base sm:text-lg font-bold text-[#222] tabular-nums">
-                    {recipe.calories ?? '—'} <span className="text-xs font-normal text-[#888]">kcal</span>
+          {/* 4. PREPARACIÓN PASO A PASO */}
+          <div className="p-5 sm:p-6 bg-white border-b border-black/[0.06]">
+            <h4 className="text-sm font-bold text-[#181818] uppercase tracking-wider mb-2">
+              Preparación paso a paso
+            </h4>
+            <p className="text-[11px] text-[#777] mb-4">
+              {portionMultiplier === 2
+                ? 'Guía exacta de cocción combinada y distribución de platos para los dos:'
+                : 'Guía de cocción para preparar tu porción individual:'}
+            </p>
+
+            <ol className="space-y-3.5">
+              {(portionMultiplier === 2 && recipe.instructionsCombined && recipe.instructionsCombined.length > 0
+                ? recipe.instructionsCombined
+                : recipe.instructions
+              ).map((step, idx) => (
+                <li key={idx} className="flex gap-3 text-xs leading-relaxed text-[#333]">
+                  <span className="w-5 h-5 rounded-full bg-[#2C523C] text-white text-[11px] font-bold flex items-center justify-center shrink-0 tabular-nums">
+                    {idx + 1}
                   </span>
-                </div>
+                  <p className="pt-0.5 flex-1">{step}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          {/* 5. REGLA DE SERVIDO Y EMPLATADO (ABformatter Y ABAJO DE LA RECETA) */}
+          {cooked?.servingRuleSummary && (
+            <div className="p-4 sm:p-5 bg-emerald-50/70 border-b border-emerald-900/10">
+              <div className="flex items-start gap-2.5">
+                <Utensils className="w-4 h-4 text-[#2C523C] shrink-0 mt-0.5" />
                 <div>
-                  <span className="text-[11px] text-[#737373] uppercase tracking-wider block">Proteínas</span>
-                  <span className="text-base sm:text-lg font-bold text-[#222] tabular-nums">
-                    {recipe.proteinGrams ?? '—'} <span className="text-xs font-normal text-[#888]">g</span>
+                  <span className="font-bold text-[12px] uppercase tracking-wide block mb-1 text-[#2C523C]">
+                    Regla de servido y emplatado del plan:
                   </span>
-                </div>
-                <div>
-                  <span className="text-[11px] text-[#737373] uppercase tracking-wider block">Carbohidratos</span>
-                  <span className="text-base sm:text-lg font-bold text-[#222] tabular-nums">
-                    {recipe.carbsGrams ?? '—'} <span className="text-xs font-normal text-[#888]">g</span>
-                  </span>
-                </div>
-                <div>
-                  <span className="text-[11px] text-[#737373] uppercase tracking-wider block">Grasas</span>
-                  <span className="text-base sm:text-lg font-bold text-[#222] tabular-nums">
-                    {recipe.fatsGrams ?? '—'} <span className="text-xs font-normal text-[#888]">g</span>
-                  </span>
+                  <p className="text-xs text-[#163323] leading-relaxed font-medium">
+                    {cooked.servingRuleSummary}
+                  </p>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Historical Preparation Dates Log */}
+          {/* 6. VALOR NUTRICIONAL (DESPLEGABLE PARA ÉL Y PARA ELLA) */}
+          {(recipe.calories || recipe.proteinGrams || recipe.carbsGrams || recipe.fatsGrams) && (
+            <div className="border-b border-black/[0.06] bg-[#FAF9F6]">
+              <button
+                type="button"
+                onClick={() => setIsNutritionOpen(!isNutritionOpen)}
+                className="w-full px-5 py-3.5 flex items-center justify-between hover:bg-[#F4F2EC] transition-colors cursor-pointer text-left"
+              >
+                <div className="flex items-center gap-2">
+                  <Flame className="w-4 h-4 text-amber-600" />
+                  <span className="text-xs font-bold text-[#1A1A1A] uppercase tracking-wider">
+                    Valores Nutricionales (Él & Ella)
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs text-[#2C523C] font-medium">
+                  <span className="text-[11px]">{isNutritionOpen ? 'Ocultar' : 'Ver valores'}</span>
+                  {isNutritionOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                </div>
+              </button>
+
+              {isNutritionOpen && (
+                <div className="px-5 pb-5 pt-1 space-y-3">
+                  {/* Desplegable Nutrición: Para Él */}
+                  <div className="border border-emerald-900/15 rounded-xl bg-white overflow-hidden shadow-3xs">
+                    <button
+                      type="button"
+                      onClick={() => setIsNutritionHeOpen(!isNutritionHeOpen)}
+                      className="w-full px-4 py-2.5 flex items-center justify-between bg-emerald-50/50 hover:bg-emerald-50/80 transition-colors text-left cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-[#183B28]">👨 Porción Él</span>
+                        <span className="text-[11px] text-[#666] font-medium">
+                          ({nutritionHe.calories} kcal)
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1 text-[#2C523C] text-xs font-medium">
+                        <span className="text-[10px]">{isNutritionHeOpen ? 'Ocultar' : 'Ver'}</span>
+                        {isNutritionHeOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                      </div>
+                    </button>
+
+                    {isNutritionHeOpen && (
+                      <div className="p-3.5 grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center bg-white">
+                        <div className="bg-[#FAF9F6] p-2 rounded-lg border border-black/[0.04]">
+                          <span className="text-[10px] text-[#737373] uppercase tracking-wider block">Calorías</span>
+                          <span className="text-base font-bold text-[#222] tabular-nums">
+                            {nutritionHe.calories} <span className="text-[10px] font-normal text-[#888]">kcal</span>
+                          </span>
+                        </div>
+                        <div className="bg-[#FAF9F6] p-2 rounded-lg border border-black/[0.04]">
+                          <span className="text-[10px] text-[#737373] uppercase tracking-wider block">Proteínas</span>
+                          <span className="text-base font-bold text-[#222] tabular-nums">
+                            {nutritionHe.proteinGrams} <span className="text-[10px] font-normal text-[#888]">g</span>
+                          </span>
+                        </div>
+                        <div className="bg-[#FAF9F6] p-2 rounded-lg border border-black/[0.04]">
+                          <span className="text-[10px] text-[#737373] uppercase tracking-wider block">Carbos netos</span>
+                          <span className="text-base font-bold text-[#222] tabular-nums">
+                            {nutritionHe.carbsGrams} <span className="text-[10px] font-normal text-[#888]">g</span>
+                          </span>
+                        </div>
+                        <div className="bg-[#FAF9F6] p-2 rounded-lg border border-black/[0.04]">
+                          <span className="text-[10px] text-[#737373] uppercase tracking-wider block">Grasas</span>
+                          <span className="text-base font-bold text-[#222] tabular-nums">
+                            {nutritionHe.fatsGrams} <span className="text-[10px] font-normal text-[#888]">g</span>
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Desplegable Nutrición: Para Ella */}
+                  <div className="border border-emerald-900/15 rounded-xl bg-white overflow-hidden shadow-3xs">
+                    <button
+                      type="button"
+                      onClick={() => setIsNutritionSheOpen(!isNutritionSheOpen)}
+                      className="w-full px-4 py-2.5 flex items-center justify-between bg-emerald-50/50 hover:bg-emerald-50/80 transition-colors text-left cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-[#183B28]">👩 Porción Ella</span>
+                        <span className="text-[11px] text-[#666] font-medium">
+                          ({nutritionShe.calories} kcal)
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1 text-[#2C523C] text-xs font-medium">
+                        <span className="text-[10px]">{isNutritionSheOpen ? 'Ocultar' : 'Ver'}</span>
+                        {isNutritionSheOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                      </div>
+                    </button>
+
+                    {isNutritionSheOpen && (
+                      <div className="p-3.5 grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center bg-white">
+                        <div className="bg-[#FAF9F6] p-2 rounded-lg border border-black/[0.04]">
+                          <span className="text-[10px] text-[#737373] uppercase tracking-wider block">Calorías</span>
+                          <span className="text-base font-bold text-[#222] tabular-nums">
+                            {nutritionShe.calories} <span className="text-[10px] font-normal text-[#888]">kcal</span>
+                          </span>
+                        </div>
+                        <div className="bg-[#FAF9F6] p-2 rounded-lg border border-black/[0.04]">
+                          <span className="text-[10px] text-[#737373] uppercase tracking-wider block">Proteínas</span>
+                          <span className="text-base font-bold text-[#222] tabular-nums">
+                            {nutritionShe.proteinGrams} <span className="text-[10px] font-normal text-[#888]">g</span>
+                          </span>
+                        </div>
+                        <div className="bg-[#FAF9F6] p-2 rounded-lg border border-black/[0.04]">
+                          <span className="text-[10px] text-[#737373] uppercase tracking-wider block">Carbos netos</span>
+                          <span className="text-base font-bold text-[#222] tabular-nums">
+                            {nutritionShe.carbsGrams} <span className="text-[10px] font-normal text-[#888]">g</span>
+                          </span>
+                        </div>
+                        <div className="bg-[#FAF9F6] p-2 rounded-lg border border-black/[0.04]">
+                          <span className="text-[10px] text-[#737373] uppercase tracking-wider block">Grasas</span>
+                          <span className="text-base font-bold text-[#222] tabular-nums">
+                            {nutritionShe.fatsGrams} <span className="text-[10px] font-normal text-[#888]">g</span>
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="text-[11px] text-[#555] bg-stone-100/90 p-2.5 rounded-lg border border-black/[0.04] leading-relaxed">
+                    💡 <strong className="text-[#2C523C]">Regla de proporciones (Él / Ella):</strong> La porción de Ella está calibrada a un ~70-72% de la ingesta proteica y calórica de Él, manteniendo la cetosis óptima y el requerimiento energético individual.
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Banner Consulta IA sobre esta receta */}
+          {onOpenAiChat && (
+            <div className="p-4 sm:p-5 bg-gradient-to-r from-emerald-50/70 to-stone-50 border-b border-emerald-900/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-start gap-2.5">
+                <div className="w-7 h-7 rounded-lg bg-[#2C523C] text-white flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-200" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-[#183B28]">¿Dudas o necesitas reemplazar algún ingrediente?</h4>
+                  <p className="text-[11px] text-[#555] leading-relaxed">
+                    Pregúntale a Zeta-Keto AI cómo sustituir carnes, verduras o ajustar los gramos para ambos.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => onOpenAiChat(recipe)}
+                className="px-3.5 py-2 text-xs font-semibold text-white bg-[#2C523C] hover:bg-[#1E3B2A] rounded-lg transition-colors shrink-0 flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
+                <span>Consultar Asistente IA</span>
+              </button>
+            </div>
+          )}
+
+          {/* 7. HISTORIAL DE PREPARACIONES */}
           <div className="p-5 sm:p-6 bg-[#FAF9F6]">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3.5">
               <h4 className="text-sm font-semibold text-[#181818] flex items-center gap-2">
@@ -660,7 +788,7 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
             {recipeLogs.length === 0 ? (
               <div className="p-4 rounded-xl border border-dashed border-black/15 bg-white/70 text-center">
                 <p className="text-xs text-[#666666] mb-3">
-                  Aún no has registrado preparaciones de esta receta. Pulsa abajo para registrarla:
+                  Aún no has registrado preparaciones de esta receta.
                 </p>
                 <div className="flex items-center justify-center gap-2 flex-wrap">
                   <button
@@ -669,15 +797,7 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
                     className="px-4 py-2 text-xs font-semibold text-white bg-[#2C523C] hover:bg-[#234230] rounded-lg transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer"
                   >
                     <Check className="w-3.5 h-3.5" />
-                    <span>Marcar preparada hoy ({formatDateSpanish(getTodayDateString())})</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowAddDateBox(true)}
-                    className="px-3 py-2 text-xs font-medium text-[#444] bg-white hover:bg-stone-100 border border-black/15 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <Calendar className="w-3.5 h-3.5" />
-                    <span>Elegir otra fecha...</span>
+                    <span>Marcar preparada hoy</span>
                   </button>
                 </div>
               </div>
@@ -704,6 +824,18 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
               </div>
             )}
           </div>
+
+          {/* 8. ETIQUETAS AL FINAL FINAL */}
+          {recipe.tags && recipe.tags.length > 0 && (
+            <div className="px-5 py-3 bg-[#F4F3EF] border-t border-black/[0.05] flex items-center gap-2 flex-wrap">
+              <span className="text-[11px] font-medium text-[#888]">Etiquetas:</span>
+              {recipe.tags.map((tag, i) => (
+                <span key={i} className="text-[10px] text-[#777] bg-white px-2 py-0.5 rounded border border-black/[0.05]">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

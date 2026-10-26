@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, Calendar, Check, Utensils, AlertCircle, Scale } from 'lucide-react';
+import { Clock, Calendar, Check, Utensils, AlertCircle } from 'lucide-react';
 import { Recipe, PrepLog } from '../types';
 import { getHumanRecency, getDaysSinceLastPrepared, getTodayDateString } from '../utils/storage';
 
@@ -140,7 +140,6 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
             title="Haz clic para ver las porciones cocidas exactas para servir en balanza"
           >
             <div className="flex items-center gap-1.5 truncate">
-              <Scale className="w-3.5 h-3.5 shrink-0 text-[#2C523C]" />
               <span className="font-semibold text-[#183B28] truncate">Servir cocido:</span>
               <span className="text-[#444] truncate">
                 {recipe.cookedServing.servingHe?.proteinCooked?.split(' ').slice(0, 3).join(' ') ||

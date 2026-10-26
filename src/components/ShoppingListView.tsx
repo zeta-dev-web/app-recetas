@@ -8,7 +8,6 @@ import {
   X,
   Search,
   CheckCheck,
-  Scale,
   ListFilter,
   Layers,
   ChevronDown,
@@ -317,7 +316,6 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
                     : 'text-[#666] hover:text-[#1A1A1A]'
                 }`}
               >
-                <Scale className="w-3.5 h-3.5 text-[#2C523C]" />
                 <span>Totales sumados (Compras)</span>
               </button>
               <button

@@ -58,6 +58,12 @@ export interface Recipe {
   proteinGrams?: number;
   carbsGrams?: number;
   fatsGrams?: number;
+
+  // Nutrition for Ella
+  caloriesShe?: number;
+  proteinGramsShe?: number;
+  carbsGramsShe?: number;
+  fatsGramsShe?: number;
   imageUrl: string;
   description: string;
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Utensils, CalendarDays, ShoppingCart, BookOpen, HardDriveDownload } from 'lucide-react';
+import { Plus, Utensils, CalendarDays, ShoppingCart, BookOpen, HardDriveDownload, Sparkles } from 'lucide-react';
 import { ActiveTab } from '../types';
 
 interface HeaderProps {
@@ -7,13 +7,15 @@ interface HeaderProps {
   onTabChange: (tab: ActiveTab) => void;
   onOpenAddModal: () => void;
   onOpenExportModal: () => void;
+  onOpenAiChat: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   activeTab,
   onTabChange,
   onOpenAddModal,
-  onOpenExportModal
+  onOpenExportModal,
+  onOpenAiChat
 }) => {
   return (
     <>
@@ -27,11 +29,8 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <span className="w-2.5 h-2.5 rounded-full bg-[#2C523C] shrink-0" />
             <div className="flex items-baseline gap-1.5">
-              <span className="text-lg sm:text-xl font-bold tracking-tight text-[#1A1A1A]">
-                Savia
-              </span>
-              <span className="text-xs font-semibold text-[#2C523C] uppercase tracking-wider hidden xs:inline">
-                Keto
+              <span className="text-lg sm:text-xl font-bold tracking-tight text-[#1A1A1A] lowercase">
+                zeta-keto
               </span>
             </div>
           </button>
@@ -92,6 +91,16 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Zone 3: Primary Actions */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <button
+              onClick={onOpenAiChat}
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-[#183B28] bg-emerald-50 hover:bg-emerald-100/70 border border-emerald-900/15 rounded-lg transition-colors whitespace-nowrap shadow-3xs cursor-pointer min-h-[40px]"
+              title="Consultar a Zeta-Keto AI"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-emerald-700" />
+              <span className="hidden sm:inline">Asistente AI</span>
+              <span className="sm:hidden">AI</span>
+            </button>
+
             <button
               onClick={onOpenExportModal}
               title="Copia de seguridad y exportar"

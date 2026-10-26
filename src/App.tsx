@@ -387,7 +387,7 @@ export default function App() {
                     placeholder="Buscar por carne, pollo, brócoli, palta, acelga o ingrediente..."
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
-                    className="w-full pl-9 pr-9 py-2 text-xs bg-white border border-black/15 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#2C523C] placeholder:text-[#999999]"
+                    className="w-full pl-9 pr-9 py-2 text-[16px] sm:text-xs bg-white border border-black/15 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#2C523C] placeholder:text-[#999999]"
                   />
                   {searchQuery && (
                     <button

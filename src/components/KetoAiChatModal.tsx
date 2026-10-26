@@ -60,12 +60,14 @@ export const KetoAiChatModal: React.FC<KetoAiChatModalProps> = ({
     }
   }, [messages, isLoading, isOpen]);
 
-  // Focus input on open
+  // Focus input on open only on desktop screens to prevent iPhone virtual keyboard jump and zoom
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 150);
+      if (typeof window !== 'undefined' && window.innerWidth >= 640) {
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 150);
+      }
     }
   }, [isOpen]);
 
@@ -247,9 +249,9 @@ export const KetoAiChatModal: React.FC<KetoAiChatModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
+    <div className="fixed inset-0 z-50 flex flex-col justify-end sm:justify-center sm:items-center p-0 sm:p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
       <div
-        className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-black/[0.08] flex flex-col h-[88vh] max-h-[760px] overflow-hidden"
+        className="relative w-full max-w-2xl bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl border-t sm:border border-black/[0.08] flex flex-col h-[100dvh] sm:h-[85vh] max-h-[100dvh] sm:max-h-[760px] overflow-hidden overscroll-contain"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -423,8 +425,8 @@ export const KetoAiChatModal: React.FC<KetoAiChatModalProps> = ({
           ))}
         </div>
 
-        {/* Input Bar */}
-        <div className="p-3 sm:p-4 bg-white border-t border-black/[0.08] shrink-0">
+        {/* Input Bar with iOS safe area inset support */}
+        <div className="p-3 sm:p-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-white border-t border-black/[0.08] shrink-0">
           <div className="flex items-center gap-2 bg-[#F6F5F2] border border-black/10 focus-within:border-[#2C523C] rounded-xl px-3 py-2 transition-colors">
             <input
               ref={inputRef}
@@ -432,19 +434,24 @@ export const KetoAiChatModal: React.FC<KetoAiChatModalProps> = ({
               value={inputMessage}
               onChange={e => setInputMessage(e.target.value)}
               onKeyDown={handleKeyDown}
+              onFocus={() => {
+                setTimeout(() => {
+                  messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+                }, 250);
+              }}
               disabled={isLoading}
               placeholder={
                 activeRecipeContext
                   ? `Pregunta sobre "${activeRecipeContext.title}" o reemplazos...`
                   : 'Pregunta sobre recetas, porciones Él/Ella, reemplazos...'
               }
-              className="w-full bg-transparent text-xs sm:text-sm text-[#1A1A1A] placeholder:text-[#888] focus:outline-none"
+              className="w-full bg-transparent text-[16px] sm:text-sm text-[#1A1A1A] placeholder:text-[#888] focus:outline-none"
             />
             <button
               type="button"
               onClick={() => handleSendMessage()}
               disabled={!inputMessage.trim() || isLoading}
-              className="w-8 h-8 rounded-lg bg-[#2C523C] hover:bg-[#1E3B2A] text-white flex items-center justify-center shrink-0 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-3xs"
+              className="w-9 h-9 rounded-lg bg-[#2C523C] hover:bg-[#1E3B2A] text-white flex items-center justify-center shrink-0 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-3xs"
               aria-label="Enviar pregunta"
             >
               <Send className="w-4 h-4" />

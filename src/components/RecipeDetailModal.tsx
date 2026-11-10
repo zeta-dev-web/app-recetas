@@ -597,8 +597,8 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
             </div>
           )}
 
-          {/* 6. VALOR NUTRICIONAL (DESPLEGABLE PARA ÉL Y PARA ELLA) */}
-          {(recipe.calories || recipe.proteinGrams || recipe.carbsGrams || recipe.fatsGrams) && (
+          {/* 6. VALOR NUTRICIONAL (DESPLEGABLE PARA ÉL Y PARA ELLA - Solo Plan Leo) */}
+          {recipe.planId !== 'caro' && (recipe.calories || recipe.proteinGrams || recipe.carbsGrams || recipe.fatsGrams) && (
             <div className="border-b border-black/[0.06] bg-[#FAF9F6]">
               <button
                 type="button"

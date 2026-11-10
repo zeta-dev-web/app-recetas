@@ -144,7 +144,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
             <Clock className="w-3 h-3 text-[#777]" />
             {recipe.prepTimeMinutes} min
           </span>
-          {recipe.calories && (
+          {recipe.planId !== 'caro' && recipe.calories && (
             <>
               <span aria-hidden="true" className="text-black/30">·</span>
               <span className="tabular-nums text-[#666]">{recipe.calories} kcal</span>

@@ -1,9 +1,11 @@
 import { Recipe, CookingMethod, MealType } from '../types';
 import { RECIPES_DAYS_16_TO_30 } from './recipesDays16to30';
+import { RECIPES_PLAN_CARO } from './recipesPlanCaro';
 
 export const MEAL_TYPES: { id: MealType; label: string }[] = [
-  { id: 'almuerzo', label: 'Almuerzos (30)' },
-  { id: 'cena', label: 'Cenas (30)' }
+  { id: 'desayuno', label: 'Desayunos / Meriendas' },
+  { id: 'almuerzo', label: 'Almuerzos' },
+  { id: 'cena', label: 'Cenas' }
 ];
 
 export const COOKING_METHODS: { id: CookingMethod; label: string; icon: string }[] = [
@@ -1994,10 +1996,19 @@ const INITIAL_15_RECIPES: Recipe[] = [
   }
 ];
 
-// Días 16 a 30: Recetas exactas extraídas del Plan Keto de 30 Días
+// Plan Leo (30 Días - Almuerzos y Cenas en Pareja con porciones Él y Ella)
+export const PLAN_LEO_RECIPES: Recipe[] = [
+  ...INITIAL_15_RECIPES.map(r => ({ ...r, planId: 'leo' as const, tags: r.tags.includes('Plan Leo') ? r.tags : [...r.tags, 'Plan Leo'] })),
+  ...RECIPES_DAYS_16_TO_30.map(r => ({ ...r, planId: 'leo' as const, tags: r.tags.includes('Plan Leo') ? r.tags : [...r.tags, 'Plan Leo'] }))
+];
+
+// Plan Caro (Directrices individuales, Desayunos/Meriendas, Almuerzos, Cenas)
+export const PLAN_CARO_RECIPES: Recipe[] = RECIPES_PLAN_CARO;
+
+// Recetario completo combinado
 export const INITIAL_RECIPES: Recipe[] = [
-  ...INITIAL_15_RECIPES,
-  ...RECIPES_DAYS_16_TO_30
+  ...PLAN_LEO_RECIPES,
+  ...PLAN_CARO_RECIPES
 ];
 
 export const KETO_GUIDE = {

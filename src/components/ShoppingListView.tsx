@@ -22,6 +22,7 @@ import {
   AggregatedItem,
   CategoryGroup
 } from '../utils/ingredientAggregator';
+import { matchesRecipeSearch } from '../utils/search';
 
 interface ShoppingListViewProps {
   recipes: Recipe[];
@@ -68,6 +69,7 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
   const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
 
   const [recipeSearch, setRecipeSearch] = useState('');
+  const [selectorPlanFilter, setSelectorPlanFilter] = useState<'all' | 'leo' | 'caro'>('all');
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -89,11 +91,30 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
     }
   };
 
-  const selectDaysPreset = (startDay: number, endDay: number) => {
+  const selectLeoPreset = (startDay: number, endDay: number) => {
     const ids = recipes
-      .filter(r => r.dayNumber && r.dayNumber >= startDay && r.dayNumber <= endDay)
+      .filter(r => (r.planId || 'leo') === 'leo' && r.dayNumber && r.dayNumber >= startDay && r.dayNumber <= endDay)
       .map(r => r.id);
     updateSelectedRecipeIds(Array.from(new Set([...selectedRecipeIds, ...ids])));
+  };
+
+  const selectCaroPreset = (type: 'week' | 'breakfasts' | 'all') => {
+    let ids: string[] = [];
+    const caroRecipes = recipes.filter(r => r.planId === 'caro');
+    if (type === 'week') {
+      const lunches = caroRecipes.filter(r => r.mealType === 'almuerzo').slice(0, 7).map(r => r.id);
+      const dinners = caroRecipes.filter(r => r.mealType === 'cena').slice(0, 7).map(r => r.id);
+      ids = [...lunches, ...dinners];
+    } else if (type === 'breakfasts') {
+      ids = caroRecipes.filter(r => r.mealType === 'desayuno').map(r => r.id);
+    } else {
+      ids = caroRecipes.map(r => r.id);
+    }
+    updateSelectedRecipeIds(Array.from(new Set([...selectedRecipeIds, ...ids])));
+  };
+
+  const selectDaysPreset = (startDay: number, endDay: number) => {
+    selectLeoPreset(startDay, endDay);
   };
 
   const clearAllSelected = () => {
@@ -173,15 +194,21 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
 
   // Filter recipes for selector modal
   const filteredRecipesForSelector = useMemo(() => {
-    if (!recipeSearch.trim()) return recipes;
-    const q = recipeSearch.toLowerCase().trim();
-    return recipes.filter(
-      r =>
-        r.title.toLowerCase().includes(q) ||
-        r.mealType.toLowerCase().includes(q) ||
-        (r.dayNumber && `día ${r.dayNumber}`.includes(q))
-    );
-  }, [recipes, recipeSearch]);
+    return recipes.filter(r => {
+      // Plan filter
+      const plan = r.planId || 'leo';
+      if (selectorPlanFilter !== 'all' && plan !== selectorPlanFilter) {
+        return false;
+      }
+
+      // Multi-word and accent-insensitive search query
+      if (recipeSearch.trim() && !matchesRecipeSearch(r, recipeSearch)) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [recipes, recipeSearch, selectorPlanFilter]);
 
   return (
     <div className="space-y-6 pb-20 md:pb-8">
@@ -240,32 +267,59 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
       <div className="space-y-3">
         {/* Row 1: Presets & Comensales toggle */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          {/* Presets */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
-            <span className="text-[#777] font-medium shrink-0 mr-1">Atajos:</span>
+          {/* Presets grouped by Plan Leo and Plan Caro */}
+          <div className="flex flex-wrap items-center gap-1.5 text-xs">
+            <span className="text-[#777] font-medium shrink-0 mr-1">Atajos rápidos:</span>
+            
+            {/* Leo presets */}
             <button
-              onClick={() => selectDaysPreset(1, 3)}
-              className="px-2.5 py-1.5 bg-white border border-black/10 hover:border-black/25 text-[#444] rounded-lg shrink-0 transition-colors cursor-pointer"
+              onClick={() => selectLeoPreset(1, 3)}
+              className="px-2.5 py-1.5 bg-emerald-50 border border-emerald-900/15 hover:bg-emerald-100/70 text-[#183B28] rounded-lg shrink-0 transition-colors cursor-pointer font-medium"
             >
-              Días 1 a 3 (6 platos)
+              Leo: Días 1-3 (6)
             </button>
             <button
-              onClick={() => selectDaysPreset(1, 7)}
-              className="px-2.5 py-1.5 bg-white border border-black/10 hover:border-black/25 text-[#444] rounded-lg shrink-0 transition-colors cursor-pointer"
+              onClick={() => selectLeoPreset(1, 7)}
+              className="px-2.5 py-1.5 bg-emerald-50 border border-emerald-900/15 hover:bg-emerald-100/70 text-[#183B28] rounded-lg shrink-0 transition-colors cursor-pointer font-medium"
             >
-              Semana 1 (14 platos)
+              Leo: Semana 1 (14)
             </button>
             <button
-              onClick={() => selectDaysPreset(8, 15)}
-              className="px-2.5 py-1.5 bg-white border border-black/10 hover:border-black/25 text-[#444] rounded-lg shrink-0 transition-colors cursor-pointer"
+              onClick={() => selectLeoPreset(1, 30)}
+              className="px-2.5 py-1.5 bg-emerald-50 border border-emerald-900/15 hover:bg-emerald-100/70 text-[#183B28] rounded-lg shrink-0 transition-colors cursor-pointer font-medium"
             >
-              Semana 2 (16 platos)
+              Todo Plan Leo (30)
             </button>
+
+            <span className="text-black/20">|</span>
+
+            {/* Caro presets */}
+            <button
+              onClick={() => selectCaroPreset('week')}
+              className="px-2.5 py-1.5 bg-purple-50 border border-purple-900/15 hover:bg-purple-100/70 text-[#581C87] rounded-lg shrink-0 transition-colors cursor-pointer font-medium"
+            >
+              Caro: 1 Semana (14)
+            </button>
+            <button
+              onClick={() => selectCaroPreset('breakfasts')}
+              className="px-2.5 py-1.5 bg-purple-50 border border-purple-900/15 hover:bg-purple-100/70 text-[#581C87] rounded-lg shrink-0 transition-colors cursor-pointer font-medium"
+            >
+              Caro: Desayunos (13)
+            </button>
+            <button
+              onClick={() => selectCaroPreset('all')}
+              className="px-2.5 py-1.5 bg-purple-50 border border-purple-900/15 hover:bg-purple-100/70 text-[#581C87] rounded-lg shrink-0 transition-colors cursor-pointer font-medium"
+            >
+              Todo Plan Caro (55)
+            </button>
+
+            <span className="text-black/20">|</span>
+
             <button
               onClick={() => updateSelectedRecipeIds(recipes.map(r => r.id))}
-              className="px-2.5 py-1.5 bg-white border border-black/10 hover:border-black/25 text-[#444] rounded-lg shrink-0 transition-colors cursor-pointer"
+              className="px-2.5 py-1.5 bg-stone-100 hover:bg-stone-200 text-[#444] rounded-lg shrink-0 transition-colors cursor-pointer"
             >
-              Todo el plan (30 platos)
+              Ambos planes ({recipes.length})
             </button>
           </div>
 
@@ -350,10 +404,25 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
             {selectedRecipes.map(recipe => (
               <span
                 key={recipe.id}
-                className="inline-flex items-center gap-1.5 text-xs bg-white border border-black/10 px-2.5 py-1 rounded-lg text-[#333] shadow-3xs"
+                className={`inline-flex items-center gap-1.5 text-xs bg-white border px-2.5 py-1 rounded-lg text-[#333] shadow-3xs ${
+                  recipe.planId === 'caro' ? 'border-purple-900/20' : 'border-emerald-900/20'
+                }`}
               >
+                <span
+                  className={`font-bold text-[9px] px-1.5 py-0.5 rounded ${
+                    recipe.planId === 'caro'
+                      ? 'bg-purple-100 text-[#581C87]'
+                      : 'bg-emerald-100 text-[#183B28]'
+                  }`}
+                >
+                  {recipe.planId === 'caro' ? 'Caro' : 'Leo'}
+                </span>
                 <span className="font-bold text-[#2C523C] text-[10px]">
-                  {recipe.dayNumber ? `D${recipe.dayNumber}` : recipe.mealType.slice(0, 3)}
+                  {recipe.dayNumber
+                    ? `D${recipe.dayNumber}`
+                    : recipe.optionNumber
+                    ? `Op.${recipe.optionNumber}`
+                    : recipe.mealType.slice(0, 3)}
                 </span>
                 <span className="truncate max-w-[170px] font-medium">{recipe.title}</span>
                 <button
@@ -395,7 +464,7 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
                   Elegir recetas para la lista de compras
                 </h3>
                 <p className="text-xs text-[#737373]">
-                  Marca las comidas y te sumaremos los ingredientes automáticamente
+                  Puedes seleccionar platos de Plan Leo, Plan Caro o ambos
                 </p>
               </div>
               <button
@@ -406,13 +475,70 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
               </button>
             </div>
 
+            {/* Plan Filter Tabs in modal */}
+            <div className="px-4 py-2.5 border-b border-black/[0.06] bg-[#FAF9F6] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="inline-flex items-center p-0.5 bg-stone-200/70 rounded-xl overflow-x-auto">
+                <button
+                  type="button"
+                  onClick={() => setSelectorPlanFilter('all')}
+                  className={`px-3 py-1 text-xs rounded-lg transition-colors cursor-pointer font-medium whitespace-nowrap ${
+                    selectorPlanFilter === 'all'
+                      ? 'bg-white text-[#1A1A1A] font-bold shadow-xs'
+                      : 'text-[#666] hover:text-[#1A1A1A]'
+                  }`}
+                >
+                  Todos ({recipes.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectorPlanFilter('leo')}
+                  className={`px-3 py-1 text-xs rounded-lg transition-colors cursor-pointer font-medium whitespace-nowrap ${
+                    selectorPlanFilter === 'leo'
+                      ? 'bg-[#183B28] text-white font-bold shadow-xs'
+                      : 'text-[#666] hover:text-[#1A1A1A]'
+                  }`}
+                >
+                  Plan Leo ({recipes.filter(r => (r.planId || 'leo') === 'leo').length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectorPlanFilter('caro')}
+                  className={`px-3 py-1 text-xs rounded-lg transition-colors cursor-pointer font-medium whitespace-nowrap ${
+                    selectorPlanFilter === 'caro'
+                      ? 'bg-[#581C87] text-white font-bold shadow-xs'
+                      : 'text-[#666] hover:text-[#1A1A1A]'
+                  }`}
+                >
+                  Plan Caro ({recipes.filter(r => r.planId === 'caro').length})
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const visibleIds = filteredRecipesForSelector.map(r => r.id);
+                  const allVisibleSelected = visibleIds.every(id => selectedRecipeIds.includes(id));
+                  if (allVisibleSelected) {
+                    updateSelectedRecipeIds(selectedRecipeIds.filter(id => !visibleIds.includes(id)));
+                  } else {
+                    updateSelectedRecipeIds(Array.from(new Set([...selectedRecipeIds, ...visibleIds])));
+                  }
+                }}
+                className="text-[11px] text-[#2C523C] hover:underline font-semibold shrink-0 cursor-pointer text-right"
+              >
+                {filteredRecipesForSelector.length > 0 && filteredRecipesForSelector.every(r => selectedRecipeIds.includes(r.id))
+                  ? 'Deseleccionar visibles'
+                  : 'Seleccionar visibles'}
+              </button>
+            </div>
+
             {/* Search */}
             <div className="p-3 border-b border-black/[0.06] bg-white">
               <div className="relative">
                 <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#888]" />
                 <input
                   type="text"
-                  placeholder="Buscar receta por nombre o ingrediente (ej. pollo, bife, palta)..."
+                  placeholder="Buscar receta por nombre o ingrediente (ej. pollo, bife, palta, atún)..."
                   value={recipeSearch}
                   onChange={e => setRecipeSearch(e.target.value)}
                   className="w-full pl-9 pr-3 py-2 text-xs border border-black/15 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#2C523C]"
@@ -447,9 +573,21 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
                       </div>
 
                       <div>
-                        <div className="flex items-center gap-1.5 text-[11px] mb-0.5">
+                        <div className="flex items-center gap-1.5 text-[11px] mb-0.5 flex-wrap">
+                          <span
+                            className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                              recipe.planId === 'caro'
+                                ? 'bg-purple-100 text-[#581C87]'
+                                : 'bg-emerald-100 text-[#183B28]'
+                            }`}
+                          >
+                            {recipe.planId === 'caro' ? 'Plan Caro' : 'Plan Leo'}
+                          </span>
                           {recipe.dayNumber && (
                             <span className="font-bold text-[#181818]">Día {recipe.dayNumber}</span>
+                          )}
+                          {recipe.optionNumber && (
+                            <span className="font-bold text-[#581C87]">Opción {recipe.optionNumber}</span>
                           )}
                           <span className="text-[#666]">·</span>
                           <span className="uppercase font-medium text-[10px]">
@@ -666,14 +804,51 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
               >
                 <div className="flex items-center justify-between pb-3 mb-3 border-b border-black/[0.06]">
                   <div>
-                    <span className="text-[10px] font-bold text-[#2C523C] uppercase tracking-wider">
-                      {recipe.dayNumber ? `Día ${recipe.dayNumber}` : ''} · {recipe.mealType}
-                    </span>
-                    <h3 className="text-sm font-bold text-[#1A1A1A]">{recipe.title}</h3>
+                    <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                      <span
+                        className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                          recipe.planId === 'caro'
+                            ? 'bg-purple-100 text-[#581C87]'
+                            : 'bg-emerald-100 text-[#183B28]'
+                        }`}
+                      >
+                        {recipe.planId === 'caro' ? 'Plan Caro' : 'Plan Leo'}
+                      </span>
+                      {recipe.dayNumber && (
+                        <span className="text-[10px] font-bold text-[#2C523C] uppercase tracking-wider">
+                          Día {recipe.dayNumber}
+                        </span>
+                      )}
+                      {recipe.optionNumber && (
+                        <span className="text-[10px] font-bold text-[#581C87] uppercase tracking-wider">
+                          Opción {recipe.optionNumber}
+                        </span>
+                      )}
+                      <span className="text-[#888] text-[10px]">·</span>
+                      <span className="text-[10px] font-medium text-[#666] uppercase">
+                        {recipe.mealType}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => onSelectRecipeDetail(recipe)}
+                      className="text-sm font-bold text-[#1A1A1A] hover:text-[#2C523C] transition-colors text-left cursor-pointer"
+                    >
+                      {recipe.title}
+                    </button>
                   </div>
-                  <span className="text-xs text-[#777] tabular-nums">
-                    {recipe.ingredients.length} ingredientes
-                  </span>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className="text-xs text-[#777] tabular-nums">
+                      {recipe.ingredients.length} ingredientes
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => onSelectRecipeDetail(recipe)}
+                      className="text-[11px] text-[#2C523C] hover:underline font-semibold cursor-pointer"
+                    >
+                      Ver receta →
+                    </button>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">

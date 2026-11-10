@@ -16,7 +16,9 @@ import {
   Clock,
   Flame,
   ChefHat,
-  Sparkles
+  Sparkles,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { Recipe, PrepLog, MealType, CookingMethod, ActiveTab, SortOption, RecencyFilter, TimeFilter } from './types';
 import {
@@ -30,6 +32,8 @@ import {
   getTodayDateString
 } from './utils/storage';
 import { INITIAL_RECIPES, MEAL_TYPES, COOKING_METHODS } from './data/initialRecipes';
+import { PLAN_CARO_GUIDELINES } from './data/recipesPlanCaro';
+import { matchesRecipeSearch } from './utils/search';
 import { Header } from './components/Header';
 import { RecipeCard } from './components/RecipeCard';
 import { RecipeDetailModal } from './components/RecipeDetailModal';
@@ -45,6 +49,10 @@ export default function App() {
   const [recipes, setRecipes] = useState<Recipe[]>(() => loadRecipes());
   const [logs, setLogs] = useState<PrepLog[]>(() => loadPrepLogs());
   const [activeTab, setActiveTab] = useState<ActiveTab>('recipes');
+
+  // Plan Selection ('all' | 'leo' | 'caro')
+  const [selectedPlan, setSelectedPlan] = useState<'all' | 'leo' | 'caro'>('all');
+  const [isCaroGuidelinesOpen, setIsCaroGuidelinesOpen] = useState(false);
 
   // Search & Filtering
   const [searchQuery, setSearchQuery] = useState('');
@@ -138,10 +146,22 @@ export default function App() {
     showToast('Recetas restablecidas al plan Keto inicial.');
   };
 
+  // Plan counts for badges
+  const leoCount = useMemo(() => recipes.filter(r => (r.planId || 'leo') === 'leo').length, [recipes]);
+  const caroCount = useMemo(() => recipes.filter(r => r.planId === 'caro').length, [recipes]);
+
   // Filter & Sort Logic
   const filteredAndSortedRecipes = useMemo(() => {
     return recipes
       .filter(recipe => {
+        // Plan filter
+        if (selectedPlan !== 'all') {
+          const plan = recipe.planId || 'leo';
+          if (plan !== selectedPlan) {
+            return false;
+          }
+        }
+
         // Meal Type Filter
         if (selectedMealType !== 'all' && recipe.mealType !== selectedMealType) {
           return false;
@@ -163,16 +183,9 @@ export default function App() {
           return false;
         }
 
-        // Search Query (title, tags, ingredients, description)
-        if (searchQuery.trim()) {
-          const q = searchQuery.toLowerCase().trim();
-          const matchTitle = recipe.title.toLowerCase().includes(q);
-          const matchDesc = recipe.description.toLowerCase().includes(q);
-          const matchTag = recipe.tags.some(t => t.toLowerCase().includes(q));
-          const matchIng = recipe.ingredients.some(i => i.toLowerCase().includes(q));
-          if (!matchTitle && !matchDesc && !matchTag && !matchIng) {
-            return false;
-          }
+        // Search Query (multi-word, accent-insensitive search across title, ingredients, tags, etc.)
+        if (searchQuery.trim() && !matchesRecipeSearch(recipe, searchQuery)) {
+          return false;
         }
 
         // Recency Filter
@@ -194,7 +207,27 @@ export default function App() {
         const daysB = getDaysSinceLastPrepared(b.id, logs);
 
         if (sortBy === 'plan_order') {
-          // Sort by day number first, then almuerzo before cena
+          const planA = a.planId || 'leo';
+          const planB = b.planId || 'leo';
+
+          // When displaying both plans together, group by plan first
+          if (selectedPlan === 'all' && planA !== planB) {
+            if (planA === 'leo') return -1;
+            if (planB === 'leo') return 1;
+          }
+
+          // Plan Caro: Desayunos -> Almuerzos -> Cenas, then optionNumber
+          if (planA === 'caro' && planB === 'caro') {
+            const mealPriority: Record<string, number> = { desayuno: 1, almuerzo: 2, cena: 3, merienda: 4, snack: 5 };
+            const prioA = mealPriority[a.mealType] || 99;
+            const prioB = mealPriority[b.mealType] || 99;
+            if (prioA !== prioB) return prioA - prioB;
+            const optA = a.optionNumber || a.dayNumber || 999;
+            const optB = b.optionNumber || b.dayNumber || 999;
+            return optA - optB;
+          }
+
+          // Plan Leo: Sort by day number first, then almuerzo before cena
           const dayA = a.dayNumber || 999;
           const dayB = b.dayNumber || 999;
           if (dayA !== dayB) return dayA - dayB;
@@ -232,7 +265,7 @@ export default function App() {
 
         return 0;
       });
-  }, [recipes, logs, selectedMealType, selectedCookingMethod, selectedTimeFilter, searchQuery, recencyFilter, sortBy]);
+  }, [recipes, logs, selectedPlan, selectedMealType, selectedCookingMethod, selectedTimeFilter, searchQuery, recencyFilter, sortBy]);
 
   // Statistics for top overview
   const totalMealsThisWeek = useMemo(() => {
@@ -246,6 +279,12 @@ export default function App() {
       return diff >= 0 && diff < 7;
     }).length;
   }, [logs]);
+
+  // Global search matches across all plans and filters (to suggest when active plan/meal filter has 0 results)
+  const matchingRecipesAnywhere = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    return recipes.filter(r => matchesRecipeSearch(r, searchQuery));
+  }, [recipes, searchQuery]);
 
   return (
     <div className="min-h-screen bg-[#FAF9F6] text-[#222222] flex flex-col font-sans">
@@ -274,17 +313,25 @@ export default function App() {
         {/* VIEW 1: RECETARIO KETO */}
         {activeTab === 'recipes' && (
           <div className="space-y-6">
-            {/* Minimalist Hero Section & Key Statistics */}
+            {/* Hero Section & Key Statistics */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-black/[0.06]">
               <div className="max-w-xl">
                 <span className="text-xs font-medium text-[#2C523C] uppercase tracking-wider block mb-1">
-                  Plan Cetogénico de 30 Días
+                  Plan Cetogénico · Recetario Integral
                 </span>
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#1A1A1A] leading-tight text-balance">
-                  Almuerzos y Cenas Keto organizados
+                  {selectedPlan === 'leo'
+                    ? 'Plan Leo · Almuerzos y Cenas (30 Días)'
+                    : selectedPlan === 'caro'
+                    ? 'Plan Caro · 55 Opciones y Pautas Nutricionales'
+                    : 'Recetario Keto · Plan Leo & Plan Caro'}
                 </h1>
                 <p className="text-xs sm:text-sm text-[#666666] mt-2 leading-relaxed">
-                  Filtra por comida, tipo de cocción (plancha, horno, salteado) y tiempo de preparación. Registra la fecha para no repetir platos.
+                  {selectedPlan === 'leo'
+                    ? 'Menú de 30 días para almuerzos y cenas con ingredientes y porciones diferenciadas para Él y Ella.'
+                    : selectedPlan === 'caro'
+                    ? '55 opciones (13 desayunos/meriendas, 21 almuerzos, 21 cenas) con porciones individuales y reglas nutricionales.'
+                    : 'Accede a las recetas de Plan Leo y Plan Caro. Puedes combinarlas en la lista de compras según tu preferencia.'}
                 </p>
               </div>
 
@@ -292,10 +339,10 @@ export default function App() {
               <div className="flex items-center gap-6 sm:gap-8 pt-2 md:pt-0">
                 <div>
                   <span className="text-[11px] text-[#737373] uppercase tracking-wider block">
-                    Recetas del Plan
+                    Recetas en vista
                   </span>
                   <span className="text-2xl font-bold text-[#1A1A1A] tabular-nums">
-                    {recipes.length}
+                    {filteredAndSortedRecipes.length}
                   </span>
                 </div>
                 <div className="h-8 w-px bg-black/[0.08]" />
@@ -308,6 +355,215 @@ export default function App() {
                   </span>
                 </div>
               </div>
+            </div>
+
+            {/* SECTION 1: PLAN SELECTOR (PLAN LEO vs PLAN CARO) */}
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                {/* Card Plan Leo */}
+                <div
+                  onClick={() => {
+                    setSelectedPlan('leo');
+                    if (selectedMealType === 'desayuno') setSelectedMealType('all');
+                  }}
+                  className={`p-4 sm:p-5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 relative overflow-hidden ${
+                    selectedPlan === 'leo'
+                      ? 'bg-gradient-to-br from-[#183B28] to-[#244A34] text-white border-[#2C523C] shadow-md ring-2 ring-[#2C523C]/50'
+                      : 'bg-white hover:bg-stone-50 text-[#222] border-black/[0.08] hover:border-black/20 shadow-3xs'
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                      <span
+                        className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                          selectedPlan === 'leo'
+                            ? 'bg-emerald-700/80 text-emerald-100'
+                            : 'bg-emerald-100 text-[#183B28]'
+                        }`}
+                      >
+                        Plan Leo
+                      </span>
+                      <span
+                        className={`text-xs font-semibold tabular-nums ${
+                          selectedPlan === 'leo' ? 'text-emerald-200' : 'text-[#666]'
+                        }`}
+                      >
+                        {leoCount} recetas
+                      </span>
+                    </div>
+                    <h3 className="text-base font-bold tracking-tight">
+                      Almuerzos & Cenas (30 Días)
+                    </h3>
+                    <p
+                      className={`text-xs mt-1 leading-relaxed ${
+                        selectedPlan === 'leo' ? 'text-stone-200' : 'text-[#666]'
+                      }`}
+                    >
+                      30 días completos de almuerzo y cena con porciones calibradas para Él y Ella.
+                    </p>
+                  </div>
+
+                  <div
+                    className={`flex items-center justify-between pt-2 border-t text-xs font-medium ${
+                      selectedPlan === 'leo'
+                        ? 'border-white/15 text-emerald-200'
+                        : 'border-black/[0.06] text-[#2C523C]'
+                    }`}
+                  >
+                    <span>{selectedPlan === 'leo' ? '✓ Plan Activo' : 'Entrar a Plan Leo →'}</span>
+                    <span className="text-[11px] opacity-80">Porciones Él / Ella</span>
+                  </div>
+                </div>
+
+                {/* Card Plan Caro */}
+                <div
+                  onClick={() => {
+                    setSelectedPlan('caro');
+                  }}
+                  className={`p-4 sm:p-5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 relative overflow-hidden ${
+                    selectedPlan === 'caro'
+                      ? 'bg-gradient-to-br from-[#4A154B] to-[#5B1E5C] text-white border-purple-800 shadow-md ring-2 ring-purple-500/50'
+                      : 'bg-white hover:bg-stone-50 text-[#222] border-black/[0.08] hover:border-black/20 shadow-3xs'
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                      <span
+                        className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                          selectedPlan === 'caro'
+                            ? 'bg-purple-700/80 text-purple-100'
+                            : 'bg-purple-100 text-[#581C87]'
+                        }`}
+                      >
+                        Plan Caro
+                      </span>
+                      <span
+                        className={`text-xs font-semibold tabular-nums ${
+                          selectedPlan === 'caro' ? 'text-purple-200' : 'text-[#666]'
+                        }`}
+                      >
+                        {caroCount} opciones
+                      </span>
+                    </div>
+                    <h3 className="text-base font-bold tracking-tight">
+                      Guía y Opciones Individuales
+                    </h3>
+                    <p
+                      className={`text-xs mt-1 leading-relaxed ${
+                        selectedPlan === 'caro' ? 'text-stone-200' : 'text-[#666]'
+                      }`}
+                    >
+                      13 desayunos/meriendas, 21 almuerzos y 21 cenas con pautas nutricionales personalizadas.
+                    </p>
+                  </div>
+
+                  <div
+                    className={`flex items-center justify-between pt-2 border-t text-xs font-medium ${
+                      selectedPlan === 'caro'
+                        ? 'border-white/15 text-purple-200'
+                        : 'border-black/[0.06] text-[#581C87]'
+                    }`}
+                  >
+                    <span>{selectedPlan === 'caro' ? '✓ Plan Activo' : 'Entrar a Plan Caro →'}</span>
+                    <span className="text-[11px] opacity-80">Porción individual + pautas</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Segmented Switch and Caro Guidelines button */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1">
+                <div className="inline-flex items-center p-1 bg-stone-200/70 rounded-xl overflow-x-auto">
+                  <button
+                    onClick={() => setSelectedPlan('all')}
+                    className={`px-3 py-1.5 text-xs rounded-lg transition-colors cursor-pointer font-medium whitespace-nowrap ${
+                      selectedPlan === 'all'
+                        ? 'bg-white text-[#1A1A1A] font-bold shadow-xs'
+                        : 'text-[#666] hover:text-[#1A1A1A]'
+                    }`}
+                  >
+                    Ver ambos planes ({recipes.length})
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedPlan('leo');
+                      if (selectedMealType === 'desayuno') setSelectedMealType('all');
+                    }}
+                    className={`px-3 py-1.5 text-xs rounded-lg transition-colors cursor-pointer font-medium whitespace-nowrap ${
+                      selectedPlan === 'leo'
+                        ? 'bg-[#183B28] text-white font-bold shadow-xs'
+                        : 'text-[#666] hover:text-[#1A1A1A]'
+                    }`}
+                  >
+                    Solo Plan Leo ({leoCount})
+                  </button>
+                  <button
+                    onClick={() => setSelectedPlan('caro')}
+                    className={`px-3 py-1.5 text-xs rounded-lg transition-colors cursor-pointer font-medium whitespace-nowrap ${
+                      selectedPlan === 'caro'
+                        ? 'bg-[#581C87] text-white font-bold shadow-xs'
+                        : 'text-[#666] hover:text-[#1A1A1A]'
+                    }`}
+                  >
+                    Solo Plan Caro ({caroCount})
+                  </button>
+                </div>
+
+                {selectedPlan === 'caro' && (
+                  <button
+                    type="button"
+                    onClick={() => setIsCaroGuidelinesOpen(!isCaroGuidelinesOpen)}
+                    className="text-xs text-[#581C87] font-semibold bg-purple-50 hover:bg-purple-100/80 px-3 py-1.5 rounded-lg border border-purple-900/15 flex items-center gap-1.5 cursor-pointer self-start sm:self-auto"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-purple-700" />
+                    <span>{isCaroGuidelinesOpen ? 'Ocultar pautas de Caro' : 'Ver pautas y directrices de Caro'}</span>
+                    {isCaroGuidelinesOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                  </button>
+                )}
+              </div>
+
+              {/* Collapsible Caro Guidelines Card */}
+              {selectedPlan === 'caro' && isCaroGuidelinesOpen && (
+                <div className="bg-purple-50/70 border border-purple-900/15 rounded-2xl p-4 sm:p-5 shadow-2xs space-y-3.5 animate-fade-in">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-[#581C87]" />
+                        <h3 className="text-sm font-bold text-[#581C87]">
+                          {PLAN_CARO_GUIDELINES.title}
+                        </h3>
+                      </div>
+                      <p className="text-xs text-[#555] mt-0.5">
+                        {PLAN_CARO_GUIDELINES.summary}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setIsCaroGuidelinesOpen(false)}
+                      className="text-[#777] hover:text-[#222] text-xs p-1 cursor-pointer"
+                      title="Cerrar pautas"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+                    {PLAN_CARO_GUIDELINES.rules.map((rule, idx) => (
+                      <div
+                        key={idx}
+                        className="bg-white p-3 rounded-xl border border-purple-900/10 shadow-3xs flex flex-col justify-between"
+                      >
+                        <div>
+                          <span className="text-xs font-bold text-[#1A1A1A] block mb-1">
+                            {rule.title}
+                          </span>
+                          <p className="text-[11px] text-[#555] leading-relaxed">
+                            {rule.detail}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Filter Section: Meal Type Tabs (Segmented Control) */}
@@ -323,9 +579,18 @@ export default function App() {
                         : 'text-[#666] hover:text-[#1A1A1A]'
                     }`}
                   >
-                    Todas ({recipes.length})
+                    Todas ({
+                      selectedPlan === 'all'
+                        ? recipes.length
+                        : selectedPlan === 'leo'
+                        ? leoCount
+                        : caroCount
+                    })
                   </button>
-                  {MEAL_TYPES.map(m => (
+                  {(selectedPlan === 'leo'
+                    ? MEAL_TYPES.filter(m => m.id !== 'desayuno')
+                    : MEAL_TYPES
+                  ).map(m => (
                     <button
                       key={m.id}
                       onClick={() => setSelectedMealType(m.id)}
@@ -342,7 +607,7 @@ export default function App() {
 
                 {/* Counter indicator */}
                 <div className="text-xs text-[#737373] whitespace-nowrap hidden sm:block tabular-nums">
-                  {filteredAndSortedRecipes.length} de {recipes.length} recetas
+                  {filteredAndSortedRecipes.length} recetas filtradas
                 </div>
               </div>
 
@@ -436,26 +701,51 @@ export default function App() {
 
             {/* Recipes Grid */}
             {filteredAndSortedRecipes.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-black/[0.08] p-12 text-center max-w-md mx-auto my-8">
-                <Utensils className="w-8 h-8 text-[#2C523C] mx-auto mb-3" />
-                <h3 className="text-base font-semibold text-[#181818] mb-1">
-                  No hay recetas que coincidan
-                </h3>
-                <p className="text-xs text-[#666666] mb-4">
-                  Prueba a limpiar los filtros de cocción, tiempo o frecuencia.
-                </p>
-                <button
-                  onClick={() => {
-                    setSearchQuery('');
-                    setSelectedMealType('all');
-                    setSelectedCookingMethod('all');
-                    setSelectedTimeFilter('all');
-                    setRecencyFilter('all');
-                  }}
-                  className="px-4 py-2 text-xs font-semibold text-[#2C523C] bg-[#EEF4F0] hover:bg-[#DEEBE1] rounded-lg transition-colors cursor-pointer"
-                >
-                  Restablecer todos los filtros
-                </button>
+              <div className="bg-white rounded-2xl border border-black/[0.08] p-8 sm:p-12 text-center max-w-md mx-auto my-8 space-y-4 shadow-3xs">
+                <Utensils className="w-8 h-8 text-[#2C523C] mx-auto mb-1" />
+                <div>
+                  <h3 className="text-base font-semibold text-[#181818] mb-1">
+                    No hay resultados en esta vista
+                  </h3>
+                  {matchingRecipesAnywhere.length > 0 ? (
+                    <p className="text-xs text-[#555] leading-relaxed">
+                      Encontramos <strong className="text-[#2C523C] font-bold">{matchingRecipesAnywhere.length} receta(s)</strong> que coinciden con &ldquo;{searchQuery}&rdquo; en otro plan o tipo de comida.
+                    </p>
+                  ) : (
+                    <p className="text-xs text-[#666] leading-relaxed">
+                      No encontramos recetas con esos términos. Puedes buscar por múltiples palabras como &ldquo;huevo clara&rdquo;, &ldquo;bife palta&rdquo; o &ldquo;pollo limon&rdquo;.
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-1">
+                  {matchingRecipesAnywhere.length > 0 && (
+                    <button
+                      onClick={() => {
+                        setSelectedPlan('all');
+                        setSelectedMealType('all');
+                        setSelectedCookingMethod('all');
+                        setSelectedTimeFilter('all');
+                        setRecencyFilter('all');
+                      }}
+                      className="w-full sm:w-auto px-4 py-2 text-xs font-semibold text-white bg-[#244230] hover:bg-[#1A3324] rounded-lg transition-colors cursor-pointer shadow-xs"
+                    >
+                      Ver {matchingRecipesAnywhere.length} receta{matchingRecipesAnywhere.length === 1 ? '' : 's'} en todos los planes
+                    </button>
+                  )}
+                  <button
+                    onClick={() => {
+                      setSearchQuery('');
+                      setSelectedMealType('all');
+                      setSelectedCookingMethod('all');
+                      setSelectedTimeFilter('all');
+                      setRecencyFilter('all');
+                    }}
+                    className="w-full sm:w-auto px-4 py-2 text-xs font-medium text-[#2C523C] bg-[#EEF4F0] hover:bg-[#DEEBE1] rounded-lg transition-colors cursor-pointer"
+                  >
+                    Restablecer filtros
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

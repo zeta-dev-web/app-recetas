@@ -46,7 +46,7 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <Utensils className="w-4 h-4" />
-              <span>Recetas (30 Días)</span>
+              <span>Recetas</span>
             </button>
             <button
               onClick={() => onTabChange('history')}

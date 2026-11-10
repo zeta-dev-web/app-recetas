@@ -133,9 +133,20 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex items-end p-5 sm:p-6">
               <div className="text-white space-y-1.5">
                 <div className="flex items-center gap-2 text-xs font-medium text-stone-200 uppercase tracking-wider flex-wrap">
-                  {recipe.dayNumber && (
-                    <span className="bg-[#2C523C] text-emerald-100 px-2.5 py-0.5 rounded-full font-bold">
-                      Día {recipe.dayNumber}
+                  <span
+                    className={`px-2.5 py-0.5 rounded-full font-bold ${
+                      recipe.planId === 'caro'
+                        ? 'bg-[#581C87] text-purple-100'
+                        : 'bg-[#2C523C] text-emerald-100'
+                    }`}
+                  >
+                    {recipe.planId === 'caro' ? 'Plan Caro' : 'Plan Leo'}
+                  </span>
+                  {(recipe.dayNumber || recipe.optionNumber) && (
+                    <span className="bg-white/20 backdrop-blur-xs text-white px-2.5 py-0.5 rounded-full font-bold">
+                      {recipe.planId === 'caro'
+                        ? `Opción ${recipe.optionNumber || recipe.dayNumber}`
+                        : `Día ${recipe.dayNumber}`}
                     </span>
                   )}
                   <span>{recipe.mealType}</span>
@@ -156,8 +167,6 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
                     <Clock className="w-3.5 h-3.5" />
                     {recipe.prepTimeMinutes} min
                   </span>
-                  <span aria-hidden="true">·</span>
-                  <span>Plan Keto 30 Días</span>
                 </div>
                 <h2 className="text-xl sm:text-3xl font-bold tracking-tight text-white leading-tight">
                   {recipe.title}
@@ -242,10 +251,27 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
             </form>
           )}
 
-          {/* 1. SELECTOR: 1 PORCIÓN vs 2 PORCIONES */}
-          <div className="p-4 sm:p-5 bg-[#FAF9F6] border-b border-black/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <span className="text-xs font-bold text-[#1A1A1A] block">Porciones a preparar</span>
+          {/* 1. SELECTOR: 1 PORCIÓN vs 2 PORCIONES (Solo para Plan Leo con porciones diferenciales) */}
+          {recipe.planId === 'caro' ? (
+            <div className="p-4 sm:p-5 bg-purple-50/70 border-b border-purple-900/10 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#581C87] shrink-0" />
+                <div>
+                  <span className="text-xs font-bold text-[#581C87] block">Plan Caro · Porción Individual</span>
+                  <span className="text-[11px] text-[#666]">
+                    Ingredientes calibrados para Caro según las reglas del plan (proteínas 180-260g, vegetales 140-210g, 1 cda de grasa).
+                  </span>
+                </div>
+              </div>
+              <span className="text-[10px] font-bold text-[#581C87] bg-purple-100 px-2.5 py-1 rounded-full shrink-0">
+                1 porción
+              </span>
+            </div>
+          ) : (
+            <>
+              <div className="p-4 sm:p-5 bg-[#FAF9F6] border-b border-black/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <span className="text-xs font-bold text-[#1A1A1A] block">Porciones a preparar</span>
               <span className="text-[11px] text-[#666]">
                 {portionMultiplier === 1
                   ? 'Cantidades ajustadas para 1 porción'
@@ -432,6 +458,8 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
               </div>
             )}
           </div>
+        </>
+      )}
 
           {/* 3. INGREDIENTES */}
           <div className="p-5 sm:p-6 bg-white border-b border-black/[0.06]">

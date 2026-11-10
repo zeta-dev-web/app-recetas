@@ -1,7 +1,7 @@
 import { Recipe, PrepLog, MealType, CookingMethod } from '../types';
 import { INITIAL_RECIPES } from '../data/initialRecipes';
 
-const STORAGE_RECIPES_KEY = 'savia_keto_recipes_v12';
+const STORAGE_RECIPES_KEY = 'savia_keto_recipes_v14';
 const STORAGE_PREP_LOGS_KEY = 'savia_keto_logs_v5';
 
 // Seed initial meal history so the 7-day Bitácora has immediate visual context
@@ -70,14 +70,33 @@ export function loadRecipes(): Recipe[] {
   try {
     const raw = localStorage.getItem(STORAGE_RECIPES_KEY);
     if (!raw) {
+      // Check if previous version existed to migrate any custom added recipes
+      const oldRaw = localStorage.getItem('savia_keto_recipes_v12') || localStorage.getItem('savia_keto_recipes_v11');
+      if (oldRaw) {
+        try {
+          const oldList: Recipe[] = JSON.parse(oldRaw);
+          const customRecipes = oldList.filter(r => r.isCustom);
+          const merged = [...INITIAL_RECIPES, ...customRecipes];
+          saveRecipes(merged);
+          return merged;
+        } catch {
+          // fallback to INITIAL_RECIPES
+        }
+      }
       saveRecipes(INITIAL_RECIPES);
       return INITIAL_RECIPES;
     }
-    const parsed = JSON.parse(raw);
+    const parsed: Recipe[] = JSON.parse(raw);
     if (!Array.isArray(parsed) || parsed.length === 0) {
+      saveRecipes(INITIAL_RECIPES);
       return INITIAL_RECIPES;
     }
-    return parsed;
+    // Ensure all recipes have planId assigned
+    const validated = parsed.map(r => ({
+      ...r,
+      planId: r.planId || (r.id.startsWith('caro-') ? 'caro' : 'leo')
+    }));
+    return validated;
   } catch (e) {
     console.error('Error loading recipes from localStorage', e);
     return INITIAL_RECIPES;

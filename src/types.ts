@@ -1,5 +1,7 @@
 export type MealType = 'desayuno' | 'almuerzo' | 'merienda' | 'cena' | 'snack';
 
+export type PlanType = 'leo' | 'caro';
+
 export type CookingMethod =
   | 'plancha'
   | 'horno'
@@ -49,9 +51,11 @@ export interface CookedServingInfo {
 export interface Recipe {
   id: string;
   title: string;
+  planId?: PlanType; // 'leo' | 'caro' (defaults to 'leo' if unspecified)
   mealType: MealType;
   cookingMethod: CookingMethod;
-  dayNumber?: number; // 1 to 15 from Keto plan
+  dayNumber?: number; // 1 to 30 for Plan Leo, or option number for Plan Caro
+  optionNumber?: number; // Option number for Plan Caro (1 to 21)
   prepTimeMinutes: number;
   servings: number;
   calories?: number;
@@ -78,7 +82,7 @@ export interface Recipe {
   tags: string[];
   cookedServing?: CookedServingInfo;
   isCustom?: boolean;
-  createdAt: string;
+  createdAt?: string;
 }
 
 export type SortOption =

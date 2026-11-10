@@ -77,20 +77,45 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
         )}
 
         {/* Day & Meal badge */}
-        <div className="absolute top-3 right-3 flex items-center gap-1.5">
-          {recipe.dayNumber && (
+        {/* Day & Meal & Plan badges */}
+        <div className="absolute top-3 right-3 flex items-center gap-1.5 flex-wrap justify-end">
+          {/* Plan badge */}
+          <div
+            className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shadow-xs ${
+              recipe.planId === 'caro'
+                ? 'bg-[#581C87] text-purple-100'
+                : 'bg-[#183B28] text-emerald-100'
+            }`}
+          >
+            {recipe.planId === 'caro' ? 'Plan Caro' : 'Plan Leo'}
+          </div>
+
+          {(recipe.dayNumber || recipe.optionNumber) && (
             <div className="bg-white/95 backdrop-blur-xs text-[#1A1A1A] text-[11px] font-bold px-2 py-0.5 rounded shadow-xs">
-              Día {recipe.dayNumber}
+              {recipe.planId === 'caro'
+                ? `Opción ${recipe.optionNumber || recipe.dayNumber}`
+                : `Día ${recipe.dayNumber}`}
             </div>
           )}
+
           <div
             className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shadow-xs flex items-center gap-1 ${
               recipe.mealType === 'almuerzo'
                 ? 'bg-[#2C523C] text-white'
-                : 'bg-[#2E2856] text-white'
+                : recipe.mealType === 'cena'
+                ? 'bg-[#2E2856] text-white'
+                : 'bg-[#B45309] text-white'
             }`}
           >
-            <span>{recipe.mealType === 'almuerzo' ? '☀️ Almuerzo' : '🌙 Cena'}</span>
+            <span>
+              {recipe.mealType === 'almuerzo'
+                ? '☀️ Almuerzo'
+                : recipe.mealType === 'cena'
+                ? '🌙 Cena'
+                : recipe.mealType === 'desayuno'
+                ? '☕ Desayuno'
+                : '🥪 Merienda'}
+            </span>
           </div>
         </div>
       </div>
@@ -99,8 +124,16 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
       <div className="p-4 sm:p-5 flex flex-col flex-1">
         {/* Category & Metadata - Zero-Pill rule: clean inline text with dots */}
         <div className="flex items-center gap-1.5 text-xs text-[#737373] mb-1.5 flex-wrap">
-          <span className="font-semibold text-[#2C523C] uppercase tracking-wider text-[11px]">
-            {mealLabelMap[recipe.mealType]}
+          <span
+            className={`font-semibold uppercase tracking-wider text-[11px] ${
+              recipe.planId === 'caro' ? 'text-[#6B21A8]' : 'text-[#2C523C]'
+            }`}
+          >
+            {recipe.planId === 'caro' ? 'Plan Caro' : 'Plan Leo'}
+          </span>
+          <span aria-hidden="true" className="text-black/30">·</span>
+          <span className="font-medium text-[#444] text-[11px]">
+            {mealLabelMap[recipe.mealType] || 'Comida'}
           </span>
           <span aria-hidden="true" className="text-black/30">·</span>
           <span className="font-medium text-[#8F4800] text-[11px]">
